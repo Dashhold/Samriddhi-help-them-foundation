@@ -144,3 +144,17 @@
 *.stl                filter=lfs diff=lfs merge=lfs -text
 *.nc                 filter=lfs diff=lfs merge=lfs -text
 *.mat                filter=lfs diff=lfs merge=lfs -text
+# ---------------------------------------------------------------------------
+# Overrides: app image assets must NOT go through Git LFS
+# ---------------------------------------------------------------------------
+# These files are imported by the app and bundled by Vite. The Figma Make
+# build sandbox never runs `git lfs pull`, so an LFS-tracked asset arrives as
+# a 130-byte pointer file, gets bundled as a ".png", and renders as a broken
+# image. Storing them as ordinary git blobs keeps them intact everywhere.
+# Rules below win because later matching lines take precedence.
+src/**/*.png     -filter -diff -merge -text
+src/**/*.jpg     -filter -diff -merge -text
+src/**/*.jpeg    -filter -diff -merge -text
+src/**/*.gif     -filter -diff -merge -text
+src/**/*.webp    -filter -diff -merge -text
+src/**/*.ico     -filter -diff -merge -text
