@@ -80,7 +80,15 @@ function Reveal({ children, className = "" }: { children: ReactNode; className?:
 function Logo({ light = false }: { light?: boolean }) {
   return (
     <a className={`brand-logo ${light ? "brand-logo--light" : ""}`} href="#home" aria-label="Samriddhi Help Team Foundation home">
-      <img src={logo} alt="Samriddhi Help Team Foundation" />
+      <img
+        src={logo}
+        alt="Samriddhi Help Team Foundation"
+        width={851}
+        height={388}
+        loading={light ? "lazy" : "eager"}
+        fetchPriority={light ? "auto" : "high"}
+        decoding="async"
+      />
     </a>
   );
 }

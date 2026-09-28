@@ -310,6 +310,8 @@ button { color: inherit; }
 
 @media (max-width: 1180px) {
   .nav-links { display: none; }
+  /* .nav-links carried the margin-left:auto, so the actions need it once it is hidden. */
+  .nav-actions { margin-left: auto; justify-content: flex-end; }
   .menu-button { display: grid; place-items: center; }
   .mobile-menu { display: grid; position: absolute; left: 0; right: 0; top: 100%; background: var(--white); padding: 0 24px; max-height: 0; overflow: hidden; transition: max-height .35s ease, padding .35s ease; box-shadow: 0 20px 30px rgba(32,33,36,.08); }
   .mobile-menu--open { max-height: 580px; padding-block: 16px 25px; }
@@ -366,7 +368,7 @@ button { color: inherit; }
   .brand-logo { width: 145px; }
   .brand-logo img { height: 42px; }
   .donate-button { min-height: 39px; padding: 0 14px; font-size: 10px; }
-  .menu-button { padding: 8px 4px; }
+  .menu-button { padding: 10px; margin-right: -4px; } /* 44px tap target, icon stays near the edge */
   .hero { margin-top: 68px; height: auto; min-height: 700px; align-items: flex-end; padding-bottom: 78px; }
   .hero__image { object-position: 58% center; }
   .hero__veil { background: linear-gradient(0deg, rgba(15,20,22,.94) 0%, rgba(15,20,22,.54) 66%, rgba(15,20,22,.2)); }
