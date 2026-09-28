@@ -1,0 +1,11 @@
+{
+  "title": "Samriddhi Help Team Foundation",
+  "description": "A modern, responsive NGO website showcasing Samriddhi Help Team Foundation's causes, impact, and opportunities for donation, volunteering, and partnership.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
