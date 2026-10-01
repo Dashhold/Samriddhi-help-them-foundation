@@ -63,6 +63,14 @@ export type Campaign = {
   featured: boolean;
 };
 
+export type FundRaisingContent = {
+  enabled: boolean;
+  eyebrow: string;
+  title: string;
+  body: string;
+  campaigns: Campaign[];
+};
+
 export type ImpactMetric = {
   id: string;
   label: string;
@@ -139,7 +147,6 @@ export type ContactSettings = {
 
 export type SiteContent = {
   announcement: Announcement;
-  hero: HeroContent;
   pageBanners: {
     news: PageBanner;
     documents: PageBanner;
@@ -149,7 +156,7 @@ export type SiteContent = {
   about: HomeSection;
   story: HomeSection;
   focusAreas: FocusArea[];
-  campaigns: Campaign[];
+  fundraising: FundRaisingContent;
   impactMetrics: ImpactMetric[];
   news: NewsItem[];
   donation: DonationSettings;
@@ -159,7 +166,7 @@ export type SiteContent = {
 };
 
 export type CmsSnapshot = {
-  schemaVersion: 1;
+  schemaVersion: 2;
   updatedAt: string;
   content: SiteContent;
 };

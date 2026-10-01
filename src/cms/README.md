@@ -1,20 +1,22 @@
 # Samriddhi content layer
 
-The public website reads all editable content through `CmsProvider`.
+`CmsProvider` exposes one typed content model to public and admin components. Its transport is now Supabase rather than browser storage.
 
-## Current adapter
+## Runtime behavior
 
-`CmsProvider.tsx` persists a versioned snapshot in `localStorage`. This is intentionally a **single-browser preview adapter** so the dashboard and public pages can be built and reviewed before backend credentials are available. It is not authentication and it does not publish one administrator's edits to other visitors.
+- Public pages render bundled defaults immediately, then hydrate from the published `site_content` row.
+- If Supabase configuration or the network is unavailable, public pages retain the safe bundled fallback.
+- The admin gate does not open editors unless Auth, `admin_users` authorization and remote content loading all succeed.
+- Admin writes use optimistic revision matching, preventing one session from silently overwriting a newer revision.
+- PostgreSQL Realtime propagates published updates to already-open public pages.
+- Every write creates a row in `site_content_revisions` through a database trigger.
 
-## Production adapter contract
+## Content and financial data separation
 
-Replace the persistence internals without changing page components:
+Editable public copy, news, fundraising appeals, donation display settings and public report metadata live in the CMS JSON document. Verified donation transactions remain in the separate protected `donations` ledger and can only be written by a future trusted payment webhook/Edge Function.
 
-- `GET /api/content` — published public snapshot
-- `GET /api/admin/content` — authenticated draft snapshot
-- `PUT /api/admin/content` — validate and save a draft
-- `POST /api/admin/content/publish` — atomically publish a version
-- `POST /api/admin/assets` — authenticated image/document upload to object storage
-- `POST /api/admin/login` and secure server-side sessions
+## Assets
 
-Maintain `CmsSnapshot.schemaVersion`, validate every server payload, log content revisions, and keep payment records outside this editable content document.
+Admin image/PDF controls upload directly to the `cms-media` bucket through `storage.ts`. The bucket is public-read because the files appear on the public site, but PostgreSQL Storage policies allow writes only for active administrators.
+
+See `supabase/README.md` for migration, environment and first-admin setup.

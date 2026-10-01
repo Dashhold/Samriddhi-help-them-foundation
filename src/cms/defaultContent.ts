@@ -18,16 +18,6 @@ export const defaultSiteContent: SiteContent = {
     link: { label: "Support the appeal", href: "/donate" },
     tone: "pink",
   },
-  hero: {
-    eyebrow: "Samriddhi Help Team Foundation",
-    title: "Together, we can create a",
-    highlight: "better tomorrow",
-    body: "We turn compassion into responsible, community-focused action through transparent support, meaningful collaboration and care.",
-    imageUrl: images.hero,
-    imageAlt: "Children smiling together in a community setting",
-    primaryCta: { label: "Donate now", href: "/donate" },
-    secondaryCta: { label: "Explore our work", href: "/#work" },
-  },
   pageBanners: {
     news: {
       eyebrow: "News & updates",
@@ -103,7 +93,13 @@ export const defaultSiteContent: SiteContent = {
       enabled: true,
     },
   ],
-  campaigns: [],
+  fundraising: {
+    enabled: true,
+    eyebrow: "Fund Raising",
+    title: "Support a verified need",
+    body: "Every appeal published here is managed by the foundation with a clear purpose, funding goal and verified progress.",
+    campaigns: [],
+  },
   impactMetrics: [
     { id: "people", label: "People reached", value: "—", note: "Awaiting verified data" },
     { id: "initiatives", label: "Initiatives", value: "—", note: "Awaiting verified data" },
@@ -297,7 +293,7 @@ export const defaultSiteContent: SiteContent = {
 
 export function createDefaultSnapshot(): CmsSnapshot {
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     updatedAt: new Date().toISOString(),
     content: structuredClone(defaultSiteContent),
   };

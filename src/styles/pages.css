@@ -160,3 +160,14 @@
   .report-summary-grid { grid-template-columns: 1fr; }
   .report-item { grid-template-columns: 1fr; }
 }
+
+/* Dedicated Fund Raising section */
+.campaign-featured { display: inline-flex; margin-bottom: 10px; padding: 5px 8px; border-radius: 999px; color: var(--pink); background: var(--pink-soft); font-size: 8px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.fundraising-empty { margin-top: 42px; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 20px; padding: 30px; border: 1px dashed rgba(233,0,104,.3); border-radius: var(--radius); background: #fff; }
+.fundraising-empty > .icon { color: var(--pink); }
+.fundraising-empty h3 { margin: 0 0 6px; font: 700 22px/1.25 "Manrope", sans-serif; }
+.fundraising-empty p { margin: 0; color: var(--ink-soft); font-size: 13px; line-height: 1.6; }
+@media (max-width: 650px) {
+  .fundraising-empty { grid-template-columns: auto 1fr; padding: 24px 20px; }
+  .fundraising-empty .button { grid-column: 1 / -1; justify-self: start; }
+}

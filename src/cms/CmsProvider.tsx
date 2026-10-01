@@ -1,86 +1,106 @@
-import { ReactNode, createContext, useContext, useEffect, useMemo, useState } from "react";
+import { ReactNode, createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { createDefaultSnapshot } from "./defaultContent";
 import { CmsSnapshot, SiteContent } from "./types";
+import { isSupabaseConfigured } from "../lib/supabase";
+import { loadSiteContent, parseCmsBackup, saveSiteContent, subscribeToSiteContent } from "./repository";
 
-const STORAGE_KEY = "samriddhi.cms.snapshot.v1";
+type CmsMode = "loading" | "remote" | "fallback";
 
 type CmsContextValue = {
   content: SiteContent;
   updatedAt: string;
-  mode: "local-preview";
-  save: (content: SiteContent) => void;
-  update: (updater: (content: SiteContent) => SiteContent) => void;
-  reset: () => void;
+  revision: number;
+  mode: CmsMode;
+  loading: boolean;
+  saving: boolean;
+  error: string;
+  save: (content: SiteContent) => Promise<void>;
+  update: (updater: (content: SiteContent) => SiteContent) => Promise<void>;
+  refresh: () => Promise<void>;
+  reset: () => Promise<void>;
   exportSnapshot: () => string;
-  importSnapshot: (raw: string) => void;
+  importSnapshot: (raw: string) => Promise<void>;
 };
 
 const CmsContext = createContext<CmsContextValue | null>(null);
 
-function isSnapshot(value: unknown): value is CmsSnapshot {
-  if (!value || typeof value !== "object") return false;
-  const candidate = value as Partial<CmsSnapshot>;
-  return candidate.schemaVersion === 1 && !!candidate.content && typeof candidate.content === "object";
-}
-
-function readSnapshot(): CmsSnapshot {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return createDefaultSnapshot();
-    const parsed: unknown = JSON.parse(raw);
-    return isSnapshot(parsed) ? parsed : createDefaultSnapshot();
-  } catch {
-    return createDefaultSnapshot();
-  }
-}
-
-function persist(snapshot: CmsSnapshot) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot));
-}
-
 export function CmsProvider({ children }: { children: ReactNode }) {
-  const [snapshot, setSnapshot] = useState<CmsSnapshot>(readSnapshot);
+  const [snapshot, setSnapshot] = useState<CmsSnapshot>(createDefaultSnapshot);
+  const [revision, setRevision] = useState(0);
+  const [mode, setMode] = useState<CmsMode>(isSupabaseConfigured ? "loading" : "fallback");
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+  const snapshotRef = useRef(snapshot);
+  const revisionRef = useRef(revision);
+
+  const install = (next: CmsSnapshot & { revision?: number }) => {
+    snapshotRef.current = next;
+    setSnapshot(next);
+    if (typeof next.revision === "number") {
+      revisionRef.current = next.revision;
+      setRevision(next.revision);
+    }
+  };
+
+  const refresh = async () => {
+    if (!isSupabaseConfigured) {
+      setMode("fallback");
+      return;
+    }
+    setError("");
+    try {
+      const remote = await loadSiteContent();
+      install(remote);
+      setMode("remote");
+    } catch (loadError) {
+      setError(loadError instanceof Error ? loadError.message : "The content service could not be reached.");
+      setMode("fallback");
+    }
+  };
 
   useEffect(() => {
-    const sync = (event: StorageEvent) => {
-      if (event.key !== STORAGE_KEY || !event.newValue) return;
-      try {
-        const next: unknown = JSON.parse(event.newValue);
-        if (isSnapshot(next)) setSnapshot(next);
-      } catch {
-        // Ignore malformed updates from another tab.
+    void refresh();
+    return subscribeToSiteContent((remote) => {
+      if (remote.revision > revisionRef.current) {
+        install(remote);
+        setMode("remote");
       }
-    };
-    window.addEventListener("storage", sync);
-    return () => window.removeEventListener("storage", sync);
+    });
   }, []);
 
-  const value = useMemo<CmsContextValue>(() => {
-    const commit = (content: SiteContent) => {
-      const next: CmsSnapshot = { schemaVersion: 1, updatedAt: new Date().toISOString(), content };
-      persist(next);
-      setSnapshot(next);
-    };
-    return {
-      content: snapshot.content,
-      updatedAt: snapshot.updatedAt,
-      mode: "local-preview",
-      save: commit,
-      update: (updater) => commit(updater(structuredClone(snapshot.content))),
-      reset: () => {
-        const next = createDefaultSnapshot();
-        persist(next);
-        setSnapshot(next);
-      },
-      exportSnapshot: () => JSON.stringify(snapshot, null, 2),
-      importSnapshot: (raw) => {
-        const parsed: unknown = JSON.parse(raw);
-        if (!isSnapshot(parsed)) throw new Error("This is not a valid Samriddhi CMS backup.");
-        persist(parsed);
-        setSnapshot(parsed);
-      },
-    };
-  }, [snapshot]);
+  const commit = async (content: SiteContent) => {
+    if (!isSupabaseConfigured || mode !== "remote") {
+      throw new Error("Remote CMS is not connected. Configure Supabase before saving admin changes.");
+    }
+    setSaving(true);
+    setError("");
+    try {
+      const remote = await saveSiteContent(content, revisionRef.current);
+      install(remote);
+    } catch (saveError) {
+      const message = saveError instanceof Error ? saveError.message : "Content could not be saved.";
+      setError(message);
+      throw new Error(message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const value = useMemo<CmsContextValue>(() => ({
+    content: snapshot.content,
+    updatedAt: snapshot.updatedAt,
+    revision,
+    mode,
+    loading: mode === "loading",
+    saving,
+    error,
+    save: commit,
+    update: async (updater) => commit(updater(structuredClone(snapshotRef.current.content))),
+    refresh,
+    reset: async () => commit(createDefaultSnapshot().content),
+    exportSnapshot: () => JSON.stringify({ ...snapshotRef.current, revision: revisionRef.current }, null, 2),
+    importSnapshot: async (raw) => commit(parseCmsBackup(raw)),
+  }), [snapshot, revision, mode, saving, error]);
 
   return <CmsContext.Provider value={value}>{children}</CmsContext.Provider>;
 }
@@ -90,5 +110,3 @@ export function useCms() {
   if (!context) throw new Error("useCms must be used inside CmsProvider");
   return context;
 }
-
-export const cmsStorageKey = STORAGE_KEY;

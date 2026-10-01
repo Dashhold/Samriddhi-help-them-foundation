@@ -3,6 +3,7 @@ import { useCms } from "../cms/CmsProvider";
 import { AppLink, resolvePublicAsset } from "../lib/router";
 import NewsCard from "../components/NewsCard";
 import { ButtonLink, Icon, IconName, Reveal, SectionHeading } from "../components/ui";
+import { fixedHero } from "../content/fixedHero";
 
 const trustItems: { icon: IconName; label: string; detail: string }[] = [
   { icon: "building", label: "Section 8 Company", detail: "Licence No. 174891" },
@@ -12,8 +13,7 @@ const trustItems: { icon: IconName; label: string; detail: string }[] = [
 ];
 
 function Hero() {
-  const { content } = useCms();
-  const hero = content.hero;
+  const hero = fixedHero;
   return <section className="hero" id="home"><img className="hero__image" src={resolvePublicAsset(hero.imageUrl)} alt={hero.imageAlt} fetchPriority="high"/><div className="hero__veil"/><div className="hero__shape hero__shape--one"/><div className="hero__shape hero__shape--two"/><div className="hero__content page-shell"><div className="hero__identity"><span/>{hero.eyebrow}</div><h1>{hero.title} <em>{hero.highlight}</em></h1><p>{hero.body}</p><div className="hero__actions"><ButtonLink to={hero.primaryCta.href}>{hero.primaryCta.label}</ButtonLink><ButtonLink to={hero.secondaryCta.href} kind="light">{hero.secondaryCta.label}</ButtonLink></div><div className="hero__credential"><Icon name="shield" size={18}/><span>Section 8 Company</span><i/><span>80G provisionally approved</span></div></div><a className="scroll-cue" href="#credentials" aria-label="Scroll to organisation credentials"><span>Scroll to explore</span><b/></a></section>;
 }
 
@@ -33,11 +33,14 @@ function FocusAreas() {
   return <section className="section causes" id="work"><div className="page-shell"><Reveal><SectionHeading centered eyebrow="Our focus" title="Where we aim to make a difference" body="Our work is shaped by verified needs, responsible action and respect for every community."/></Reveal><div className="cause-grid">{enabled.map((area, index) => <Reveal key={area.id} className={`cause-card cause-card--${area.tone}`}><div className="cause-card__top"><span>{String(index + 1).padStart(2, "0")}</span><div className="cause-icon"><Icon name={icons[area.tone]} size={28}/></div></div><div className="cause-photo"><img src={resolvePublicAsset(area.imageUrl)} alt={area.imageAlt} loading="lazy"/></div><h3>{area.title}</h3><p>{area.summary}</p><span className="placeholder-label">Community-led approach <Icon name="arrow" size={17}/></span></Reveal>)}</div><p className="content-note"><Icon name="shield" size={17}/>Program claims and impact figures are published only after verification.</p></div></section>;
 }
 
-function Campaigns() {
+function FundRaising() {
   const { content } = useCms();
-  const campaigns = content.campaigns.filter((item) => item.status === "active");
-  if (!campaigns.length) return null;
-  return <section className="section campaigns" id="campaigns"><div className="page-shell"><Reveal><SectionHeading eyebrow="Current appeals" title="Support verified campaigns" body="Campaign details, goals and progress are controlled by the foundation's content team."/></Reveal><div className="campaign-grid">{campaigns.map((campaign) => { const progress = campaign.goalAmount > 0 ? Math.min(100, Math.round(campaign.raisedAmount / campaign.goalAmount * 100)) : 0; return <Reveal className="campaign-card" key={campaign.id}><img src={resolvePublicAsset(campaign.imageUrl)} alt={campaign.imageAlt}/><div className="campaign-card__body"><h3>{campaign.title}</h3><p>{campaign.summary}</p><div className="campaign-progress" aria-label={`${progress}% funded`}><span style={{ width: `${progress}%` }}/></div><div className="campaign-figures"><span>₹{campaign.raisedAmount.toLocaleString("en-IN")} raised</span><span>₹{campaign.goalAmount.toLocaleString("en-IN")} goal</span></div><ButtonLink to={`/donate?campaign=${encodeURIComponent(campaign.id)}`}>Support this campaign</ButtonLink></div></Reveal>; })}</div></div></section>;
+  const section = content.fundraising;
+  if (!section.enabled) return null;
+  const campaigns = section.campaigns
+    .filter((item) => item.status === "active")
+    .sort((a, b) => Number(b.featured) - Number(a.featured));
+  return <section className="section campaigns" id="fundraising"><div className="page-shell"><Reveal><SectionHeading eyebrow={section.eyebrow} title={section.title} body={section.body}/></Reveal>{campaigns.length ? <div className="campaign-grid">{campaigns.map((campaign) => { const progress = campaign.goalAmount > 0 ? Math.min(100, Math.round(campaign.raisedAmount / campaign.goalAmount * 100)) : 0; return <Reveal className="campaign-card" key={campaign.id}><img src={resolvePublicAsset(campaign.imageUrl)} alt={campaign.imageAlt}/><div className="campaign-card__body">{campaign.featured && <span className="campaign-featured">Featured appeal</span>}<h3>{campaign.title}</h3><p>{campaign.summary}</p><div className="campaign-progress" aria-label={`${progress}% funded`}><span style={{ width: `${progress}%` }}/></div><div className="campaign-figures"><span>₹{campaign.raisedAmount.toLocaleString("en-IN")} raised</span><span>₹{campaign.goalAmount.toLocaleString("en-IN")} goal</span></div><ButtonLink to={`/donate?campaign=${encodeURIComponent(campaign.id)}`}>Support this appeal</ButtonLink></div></Reveal>; })}</div> : <Reveal className="fundraising-empty"><Icon name="heart" size={34}/><div><h3>No active fundraising appeal right now</h3><p>When the foundation publishes a verified appeal, its purpose, funding goal and progress will appear here.</p></div><ButtonLink to="/news" kind="text">See latest updates</ButtonLink></Reveal>}</div></section>;
 }
 
 function Impact() {
@@ -103,5 +106,5 @@ function Contact() {
 }
 
 export default function HomePage() {
-  return <><Hero/><TrustStrip/><About/><FocusAreas/><Campaigns/><Impact/><Story/><GetInvolved/><DonationCta/><NewsPreview/><Transparency/><Faq/><Contact/></>;
+  return <><Hero/><TrustStrip/><About/><FundRaising/><FocusAreas/><Impact/><Story/><GetInvolved/><DonationCta/><NewsPreview/><Transparency/><Faq/><Contact/></>;
 }

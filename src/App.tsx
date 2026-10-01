@@ -9,7 +9,7 @@ import DocumentsPage from "./pages/DocumentsPage";
 import DonatePage from "./pages/DonatePage";
 import ReportsPage from "./pages/ReportsPage";
 
-const AdminDashboard = lazy(() => import("./admin/AdminDashboard"));
+const AdminAccess = lazy(() => import("./admin/AdminAccess"));
 
 function NotFoundPage() {
   return <section className="not-found"><Icon name="pin" size={34}/><h1>404</h1><h2>We could not find that page.</h2><p>The link may be out of date or the page may have moved.</p><ButtonLink to="/">Return home</ButtonLink></section>;
@@ -19,8 +19,10 @@ function AppRoutes() {
   const location = useAppLocation();
   const path = location.pathname.length > 1 ? location.pathname.replace(/\/$/, "") : location.pathname;
 
+  const isAdminRoute = path === "/admin" || path.startsWith("/admin/");
+
   useEffect(() => {
-    if (path.startsWith("/admin")) return;
+    if (isAdminRoute) return;
     const title = path === "/" ? "Samriddhi Help Team Foundation" : path.startsWith("/news/") ? "News · Samriddhi Help Team Foundation" : `${path.slice(1).replace(/-/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase())} · Samriddhi Help Team Foundation`;
     document.title = title;
     if (location.hash) {
@@ -28,10 +30,10 @@ function AppRoutes() {
     } else {
       window.scrollTo({ top: 0, behavior: "auto" });
     }
-  }, [path, location.hash]);
+  }, [path, location.hash, isAdminRoute]);
 
-  if (path.startsWith("/admin")) {
-    return <Suspense fallback={<div className="admin-root" style={{ display: "grid", placeItems: "center" }}><p>Loading admin workspace…</p></div>}><AdminDashboard/></Suspense>;
+  if (isAdminRoute) {
+    return <Suspense fallback={<div className="admin-root" style={{ display: "grid", placeItems: "center" }}><p>Loading secure admin…</p></div>}><AdminAccess/></Suspense>;
   }
 
   let page;
