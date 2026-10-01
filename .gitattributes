@@ -152,14 +152,14 @@
 # a 130-byte pointer file, gets bundled as a ".png", and renders as a broken
 # image. Storing them as ordinary git blobs keeps them intact everywhere.
 # Rules below win because later matching lines take precedence.
-src/**/*.png     -filter -diff -merge -text
-src/**/*.jpg     -filter -diff -merge -text
-src/**/*.jpeg    -filter -diff -merge -text
-src/**/*.gif     -filter -diff -merge -text
-src/**/*.webp    -filter -diff -merge -text
-src/**/*.ico     -filter -diff -merge -text
+frontend/src/**/*.png     -filter -diff -merge -text
+frontend/src/**/*.jpg     -filter -diff -merge -text
+frontend/src/**/*.jpeg    -filter -diff -merge -text
+frontend/src/**/*.gif     -filter -diff -merge -text
+frontend/src/**/*.webp    -filter -diff -merge -text
+frontend/src/**/*.ico     -filter -diff -merge -text
 
 # Public governance files are intentionally versioned as regular Git blobs.
 # Figma Make does not hydrate LFS objects during its build, and these documents
 # are small enough to ship with the static site.
-public/documents/** -filter -diff -merge -text
+frontend/public/documents/** -filter -diff -merge -text

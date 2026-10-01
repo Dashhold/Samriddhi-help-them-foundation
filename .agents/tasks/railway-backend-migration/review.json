@@ -1,0 +1,70 @@
+{
+  "verdict": "CHANGES_REQUESTED",
+  "findings": [
+    {
+      "severity": "HIGH",
+      "confidence": "confirmed",
+      "title": "Fastify production advisory",
+      "location": "backend/package.json:22; .agents/tasks/railway-backend-migration/verification.md:63",
+      "finding": "The internet-facing service ships fastify@5.6.2 despite the recorded high-severity production advisory and available fixed release.",
+      "action": "Upgrade Fastify and compatible plugins/lockfile entries to the fixed line and rerun focused security checks, or complete explicit advisory-specific security acceptance before deployment."
+    },
+    {
+      "severity": "MEDIUM",
+      "confidence": "confirmed",
+      "title": "Public draft/private CMS disclosure",
+      "location": "backend/src/routes/content.ts:13; backend/src/content/repository.ts:29-40",
+      "finding": "The public content endpoint returns inactive campaigns, draft news and reports, non-public documents, and their asset URLs; visibility filtering happens only in React.",
+      "action": "Project visible content for public reads and add a bearer-protected full-document endpoint for the admin editor."
+    },
+    {
+      "severity": "MEDIUM",
+      "confidence": "confirmed",
+      "title": "No account-wide login throttle",
+      "location": "backend/src/routes/auth.ts:38-46",
+      "finding": "The username-focused rate-limit key also contains request.ip, so distributed sources reset both focused controls against the single administrator identity.",
+      "action": "Add an independent username-hash/account control with deployment-appropriate shared state and test one username across changing IPs."
+    },
+    {
+      "severity": "MEDIUM",
+      "confidence": "confirmed",
+      "title": "Cacheable donor response",
+      "location": "backend/src/routes/donations.ts:19-32",
+      "finding": "The protected donation response contains donor PII but does not send Cache-Control: no-store.",
+      "action": "Set and test a no-store policy on protected donation-report responses."
+    },
+    {
+      "severity": "MEDIUM",
+      "confidence": "confirmed",
+      "title": "Spreadsheet formula injection",
+      "location": "src/payments/contracts.ts:53-56",
+      "finding": "CSV serialization quotes cells but does not neutralize donor-controlled values beginning with spreadsheet formula prefixes.",
+      "action": "Sanitize dangerous leading characters, including after whitespace/control characters, before CSV quoting and add focused tests."
+    },
+    {
+      "severity": "MEDIUM",
+      "confidence": "confirmed",
+      "title": "Deleted migration history accepted",
+      "location": "backend/src/migrate.ts:60-72; backend/src/routes/health.ts:7-19",
+      "finding": "Migration checks iterate only current source files, so an already-applied migration can disappear while migration execution and latest-version health still report current.",
+      "action": "Compare complete applied/source version-name-checksum sets, reject missing source history, test deletion and rename, and align readiness with complete history."
+    },
+    {
+      "severity": "MEDIUM",
+      "confidence": "confirmed",
+      "title": "No PostgreSQL migration exercise",
+      "location": ".agents/tasks/railway-backend-migration/verification.md:60",
+      "finding": "The migration DDL and apply-twice behavior were tested only through fake queries, not executed by PostgreSQL.",
+      "action": "Apply migrations twice on a Railway-matching disposable PostgreSQL instance, assert the singleton row/revision, and retain changed-history evidence."
+    },
+    {
+      "severity": "LOW",
+      "confidence": "confirmed",
+      "title": "No interactive contact-flow check",
+      "location": ".agents/tasks/railway-backend-migration/verification.md:61",
+      "finding": "Hidden login success/failure, API timeout fallback, ordinary mail preparation, and direct-route session restoration were not exercised in a browser.",
+      "action": "Run the documented staging smoke matrix with real Railway credentials before production."
+    }
+  ],
+  "reviewDoc": "c:\\Samriddhi-help-them-foundation\\.agents\\tasks\\railway-backend-migration\\review.md"
+}

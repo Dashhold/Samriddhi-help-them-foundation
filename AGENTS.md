@@ -1,41 +1,47 @@
-# figma-make-app
+# samriddhi-help-team-foundation
 
-React + Vite + Tailwind CSS project running inside Figma Make.
+React/Vite frontend plus Fastify/PostgreSQL backend, deployed as one Railway service.
 
-## Development Server
+## Development server
 
-A Vite development server is **already running** on `$PORT` (default 8443). You don't need to start it manually.
+A Vite development server may already be running on `$PORT` (default 8443). Do not start a second one. The root `npm run dev` delegates to the frontend workspace.
 
-- Preview URL: The user can access the running app through the preview panel
-- Hot reload: Changes to source files are reflected immediately
+## Project structure
 
-## Project Structure
+- `frontend/src/main.tsx` — React entrypoint.
+- `frontend/src/App.tsx` — primary application component.
+- `frontend/src/index.css` — global CSS and Tailwind CSS v4 import.
+- `frontend/public/` — static frontend assets, including governance documents.
+- `frontend/index.html` — Vite HTML shell.
+- `frontend/vite.config.ts` and `frontend/tsconfig.json` — frontend tooling.
+- `frontend/package.json` — frontend dependencies and scripts.
+- `backend/src/server.ts` — Fastify process entrypoint.
+- `backend/src/app.ts` — API composition and built-frontend serving.
+- `backend/migrations/` — ordered PostgreSQL migrations.
+- `backend/package.json` — backend dependencies and scripts.
+- `package.json` and `package-lock.json` — npm workspace orchestration and exact lockfile.
+- `railway.json` — root Railway build/migrate/start settings.
+- `.mise.toml` — Node.js toolchain version.
 
-This is the canonical project structure. Start with task-relevant files below. Only follow imports or inspect other files when required, when a documented path is missing, or when the repository contradicts this guide.
+## Commands
 
-- `src/main.tsx` - React entrypoint; imports `src/index.css` and mounts `src/App.tsx` into the `#root` element
-- `src/App.tsx` - Primary application component and the usual starting point for UI work
-- `src/index.css` - Global CSS entrypoint and Tailwind CSS v4 import
-- `index.html` - Vite HTML shell containing the `#root` element and loading `src/main.tsx`
-- `package.json` - Project dependencies and the Vite build, development, preview, and formatting scripts
-- `vite.config.ts` - Vite configuration with React, Tailwind CSS v4, and Figma Make plugins plus the `@` alias for `src`
-- `.mise.toml` - Toolchain versions for Node.js and pnpm
+Run from the repository root:
 
-## Dependencies
-
-- Runtime: React 19 and React DOM 19
-- Styling: Tailwind CSS v4 with the `@tailwindcss/vite` plugin
-- Build tooling: Vite 8, TypeScript 5.7, and `@vitejs/plugin-react`
-- Formatting: oxfmt
+- `npm ci`
+- `npm run build`
+- `npm test`
+- `npm run check`
+- `npm run format:check`
+- `npm run migrate`
+- `npm start`
 
 ## Styling
 
-This project uses **Tailwind CSS v4** through the `@tailwindcss/vite` plugin configured in `vite.config.ts`. `src/index.css` imports Tailwind with `@import 'tailwindcss';`. Use Tailwind utility classes directly in JSX and put global CSS or Tailwind v4 theme customization in `src/index.css`. This scaffold does not need a Tailwind config file or PostCSS config.
-
-`src/main.tsx` imports `src/index.css`, so global font wiring belongs in `src/index.css`. Keep CSS `@import` statements first, then add any `@font-face` rules and font-family defaults there.
+The frontend uses Tailwind CSS v4 through `@tailwindcss/vite`. `frontend/src/index.css` imports Tailwind and the existing global styles. Keep CSS `@import` statements first. No Tailwind or PostCSS config file is required.
 
 ## Code quality
 
-- Use double quotes for strings containing apostrophes (`"We're here to help"`), or escape them in single-quoted strings. An unescaped apostrophe in a single-quoted string breaks the build.
+- Use double quotes for strings containing apostrophes, or escape apostrophes in single-quoted strings.
 - Ensure JSX tags are closed and braces are balanced.
 - Export components as default exports.
+- Keep production API calls same-origin; `VITE_API_URL` is only an optional local-development override.

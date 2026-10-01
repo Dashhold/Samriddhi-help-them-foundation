@@ -1,0 +1,72 @@
+﻿{
+    "completedAt":  "2026-10-01T23:16:32.3922728Z",
+    "passed":  true,
+    "prohibitedReferenceMatches":  [
+
+                                   ],
+    "paths":  {
+                  "frontendSource":  true,
+                  "frontendPublic":  true,
+                  "frontendBuild":  true,
+                  "backendSource":  true,
+                  "rootRailwayConfig":  true,
+                  "rootWorkspaceLock":  true,
+                  "removedRootSource":  true,
+                  "removedRootPublic":  true,
+                  "removedLegacyPlatformDirectory":  true,
+                  "removedFormerHostConfig":  true,
+                  "removedPnpmLock":  true,
+                  "removedNestedBackendLock":  true,
+                  "certificateComponent":  true
+              },
+    "documents":  [
+                      {
+                          "name":  "12ab-provisional-registration.pdf",
+                          "expectedSha256":  "1a16d763a549efa9a6e403de87708d80e2400037b51830816db951cccedade59",
+                          "sourcePreserved":  true,
+                          "builtCopyPreserved":  true
+                      },
+                      {
+                          "name":  "80g-provisional-approval.pdf",
+                          "expectedSha256":  "13e5ab8a5853bdf2f2eb19d279f595df959f66df9e6138bfa013036e7039fe91",
+                          "sourcePreserved":  true,
+                          "builtCopyPreserved":  true
+                      },
+                      {
+                          "name":  "articles-of-association.pdf",
+                          "expectedSha256":  "375e699a8dd41dab105dde98582aa9f1c5c539c620b54e84d0ba3a136ddb78ef",
+                          "sourcePreserved":  true,
+                          "builtCopyPreserved":  true
+                      },
+                      {
+                          "name":  "certificate-of-incorporation.pdf",
+                          "expectedSha256":  "1c1024dd76858a35fc1cefcce92b6a9478d97f8f37704d607d3f00083251e3ac",
+                          "sourcePreserved":  true,
+                          "builtCopyPreserved":  true
+                      },
+                      {
+                          "name":  "csr-registration-letter.pdf",
+                          "expectedSha256":  "b5875cb8d40378851049d6b624a102c351d704e7fa77f8f25583923a486446a0",
+                          "sourcePreserved":  true,
+                          "builtCopyPreserved":  true
+                      },
+                      {
+                          "name":  "pan-card.jpeg",
+                          "expectedSha256":  "e2e2360d68b0cf55c41b5e805e4eac132c08071aead496619d69f5e8943300e3",
+                          "sourcePreserved":  true,
+                          "builtCopyPreserved":  true
+                      },
+                      {
+                          "name":  "section-8-licence.pdf",
+                          "expectedSha256":  "cf572b1d1d13cde4da15291e4c32e76e00213dbc2ea2ef2a2dd4bc2dee8c3434",
+                          "sourcePreserved":  true,
+                          "builtCopyPreserved":  true
+                      },
+                      {
+                          "name":  "tan-allotment-letter.jpeg",
+                          "expectedSha256":  "8a71c3fc0681d570d668686eb7d7b34423043c054e2acfe9e8f2323d8782887c",
+                          "sourcePreserved":  true,
+                          "builtCopyPreserved":  true
+                      }
+                  ]
+}

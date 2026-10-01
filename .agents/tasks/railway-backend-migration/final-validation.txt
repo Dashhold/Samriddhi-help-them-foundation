@@ -1,0 +1,106 @@
+=== workspace build ===
+
+> samriddhi-help-team-foundation@1.0.0 build
+> npm run build --workspace frontend && npm run build --workspace backend
+
+
+> samriddhi-frontend@1.0.0 build
+> vite build
+
+[36mvite v8.3.2 [32mbuilding client environment for production...[36m[39m
+transforming...
+✓ 54 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                            3.67 kB │ gzip:  1.60 kB
+dist/assets/samriddhi-logo-BL6hkmB-.png   68.42 kB
+dist/assets/index-LXtDP0_2.css            67.82 kB │ gzip: 14.42 kB
+dist/assets/AdminAccess-B8yTgOV5.js       67.82 kB │ gzip: 13.40 kB
+dist/assets/index-BowQychl.js            260.80 kB │ gzip: 79.50 kB
+
+[32m✓ built in 1.15s[39m
+
+> samriddhi-railway-api@1.0.0 build
+> tsc -p tsconfig.json
+
+=== focused tests ===
+
+> samriddhi-help-team-foundation@1.0.0 test
+> npm run test --workspace backend
+
+
+> samriddhi-railway-api@1.0.0 test
+> npm run build && node --test dist/tests/core.test.js dist/tests/api.test.js
+
+
+> samriddhi-railway-api@1.0.0 build
+> tsc -p tsconfig.json
+
+✔ single-service mode serves built files and SPA routes without shadowing the API (382.6986ms)
+✔ public content hides private records while authenticated editors receive the full document (41.6588ms)
+✔ health reports not ready for incomplete, deleted, or renamed migration history (92.2785ms)
+✔ login failures are generic and the shared account limit spans source IPs (181.5389ms)
+✔ successful login returns an opaque token while the database receives only its hash (181.609ms)
+✔ all protected CMS, upload, and financial routes reject missing or revoked sessions (22.3634ms)
+✔ content writes validate the full document and enforce optimistic revisions (48.4436ms)
+✔ asset upload rejects MIME and size violations and serves immutable validated bytes (58.1765ms)
+✔ donation reports are non-cacheable, validated, paid-only, and capped (24.5448ms)
+✔ bundled server defaults exactly match the frontend schema-v2 defaults (239.6114ms)
+✔ site content validation rejects impossible dates and unknown fields (14.7481ms)
+✔ runtime configuration requires exact origins and server-only credentials (4.2056ms)
+✔ passwords use Argon2id and opaque session tokens are stored only as hashes (248.6547ms)
+✔ administrator bootstrap hashes rotations and revokes prior sessions (245.415ms)
+✔ donation report periods reject malformed and out-of-range dates (4.168ms)
+✔ CSV exports neutralize spreadsheet formulas after whitespace and controls (252.7209ms)
+✔ certificate details stay sample-only until a donation is confirmed paid (28.6558ms)
+✔ asset metadata is sanitized and file signatures are checked (2.0484ms)
+Applied migration 999_test.sql
+✔ migration discovery is ordered, checksummed, and contains the full schema inventory (12.7079ms)
+✔ migration execution rejects changed, deleted, and renamed history (1.9433ms)
+ℹ tests 20
+ℹ suites 0
+ℹ pass 20
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2474.5197
+=== strict type checks ===
+
+> samriddhi-help-team-foundation@1.0.0 check
+> npm run check --workspace frontend && npm run check --workspace backend
+
+
+> samriddhi-frontend@1.0.0 check
+> tsc --noEmit
+
+
+> samriddhi-railway-api@1.0.0 check
+> tsc -p tsconfig.json --noEmit
+
+=== format check ===
+
+> samriddhi-help-team-foundation@1.0.0 format:check
+> npm run format:check --workspace frontend
+
+
+> samriddhi-frontend@1.0.0 format:check
+> oxfmt --check src index.html vite.config.ts package.json
+
+Checking formatting...
+
+All matched files use the correct format.
+Finished in 31ms on 39 files using 4 threads.
+=== production audit ===
+found 0 vulnerabilities
+=== full audit ===
+found 0 vulnerabilities
+=== local database tooling ===
+C:\Users\nikhi\AppData\Local\Programs\DockerDesktop\resources\bin\docker
+C:\Users\nikhi\AppData\Local\Programs\DockerDesktop\resources\bin\docker.exe
+
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+INFO: Could not find files for the given pattern(s).
+psql: unavailable
+postgres-service: unavailable
+DATABASE_URL: unset
