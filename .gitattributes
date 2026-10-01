@@ -158,3 +158,8 @@ src/**/*.jpeg    -filter -diff -merge -text
 src/**/*.gif     -filter -diff -merge -text
 src/**/*.webp    -filter -diff -merge -text
 src/**/*.ico     -filter -diff -merge -text
+
+# Public governance files are intentionally versioned as regular Git blobs.
+# Figma Make does not hydrate LFS objects during its build, and these documents
+# are small enough to ship with the static site.
+public/documents/** -filter -diff -merge -text

@@ -1,0 +1,162 @@
+/* Public route extensions. Existing homepage styles remain in index.css. */
+.public-main { min-height: 70vh; }
+.site-announcement { margin-top: 88px; color: #fff; background: var(--pink); }
+.site-announcement--teal { background: var(--teal-dark); }
+.site-announcement--yellow { color: var(--ink); background: var(--yellow); }
+.site-announcement--ink { background: var(--ink); }
+.site-announcement .page-shell { min-height: 48px; display: flex; align-items: center; justify-content: center; gap: 16px; padding-block: 8px; }
+.site-announcement span { padding: 5px 8px; border: 1px solid currentColor; border-radius: 999px; font-size: 8px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; opacity: .8; }
+.site-announcement p { margin: 0; font-size: 12px; font-weight: 600; }
+.site-announcement a { display: inline-flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; }
+.site-announcement + .public-main .hero, .site-announcement + .public-main .page-hero { margin-top: 0; }
+
+.page-hero { height: 470px; margin-top: 88px; position: relative; display: flex; align-items: flex-end; color: #fff; overflow: hidden; background: var(--ink); }
+.page-hero > img { position: absolute; inset: 0; height: 100%; object-fit: cover; }
+.page-hero__veil { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(15,20,22,.92), rgba(15,20,22,.53) 60%, rgba(15,20,22,.25)), linear-gradient(0deg, rgba(15,20,22,.55), transparent); }
+.page-hero__content { position: relative; padding-bottom: 70px; }
+.page-hero .eyebrow { color: var(--yellow); }
+.page-hero h1 { max-width: 800px; margin: 0; font: 700 clamp(44px, 6vw, 76px)/1 "Manrope", sans-serif; letter-spacing: -.055em; }
+.page-hero p { max-width: 680px; margin: 22px 0 0; color: rgba(255,255,255,.78); font-size: 17px; line-height: 1.7; }
+
+.content-section { padding: 90px 0; background: var(--cream); }
+.content-section--gray { background: var(--gray); }
+.content-section--white { background: #fff; }
+.route-intro { display: flex; justify-content: space-between; align-items: end; gap: 40px; margin-bottom: 44px; }
+.route-intro > p { max-width: 480px; color: var(--ink-soft); line-height: 1.7; }
+.empty-state { padding: 48px; text-align: center; border: 1px dashed #cbc8c1; border-radius: var(--radius); background: #fff; }
+.empty-state .icon { color: var(--pink); }
+.empty-state h3 { margin: 18px 0 8px; font: 700 25px/1.2 "Manrope"; }
+.empty-state p { max-width: 580px; margin: 0 auto; color: var(--ink-soft); line-height: 1.7; }
+
+.news-preview { background: #fff; }
+.news-preview__head { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 46px; }
+.news-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+.news-card { display: flex; flex-direction: column; min-height: 100%; overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius); background: #fff; transition: transform .25s, box-shadow .25s; }
+.news-card:hover { transform: translateY(-6px); box-shadow: var(--shadow); }
+.news-card__image { height: 235px; overflow: hidden; background: var(--gray); }
+.news-card__image img { height: 100%; object-fit: cover; transition: transform .5s; }
+.news-card:hover .news-card__image img { transform: scale(1.045); }
+.news-card__body { flex: 1; display: flex; flex-direction: column; padding: 25px; }
+.news-card__meta { display: flex; align-items: center; gap: 10px; color: var(--pink); font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; }
+.news-card__meta i { width: 3px; height: 3px; border-radius: 50%; background: var(--yellow); }
+.news-card h3 { margin: 15px 0 10px; font: 700 23px/1.25 "Manrope"; letter-spacing: -.025em; }
+.news-card p { margin: 0 0 22px; color: var(--ink-soft); font-size: 14px; line-height: 1.65; }
+.news-card__body > a { margin-top: auto; display: flex; align-items: center; justify-content: space-between; padding-top: 17px; border-top: 1px solid var(--line); color: var(--pink); font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.news-feature { display: grid; grid-template-columns: 1.2fr .8fr; min-height: 470px; margin-bottom: 30px; overflow: hidden; border-radius: var(--radius-lg); background: #142f32; color: #fff; }
+.news-feature__image { min-height: 380px; }
+.news-feature__image img { height: 100%; object-fit: cover; }
+.news-feature__copy { display: flex; flex-direction: column; justify-content: center; padding: 50px; }
+.news-feature__copy .eyebrow { color: var(--yellow); }
+.news-feature__copy h2 { margin: 0; font: 700 38px/1.12 "Manrope"; letter-spacing: -.04em; }
+.news-feature__copy p { color: rgba(255,255,255,.68); line-height: 1.7; }
+.news-feature__copy a { align-self: flex-start; margin-top: 10px; }
+.article { padding: 78px 0 110px; background: #fff; }
+.article__shell { width: min(820px, calc(100% - 36px)); margin: auto; }
+.article__back { display: inline-flex; align-items: center; gap: 8px; color: var(--pink); font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; }
+.article__meta { display: flex; flex-wrap: wrap; gap: 12px; margin: 34px 0 18px; color: var(--ink-soft); font-size: 11px; }
+.article h1 { margin: 0; font: 700 clamp(40px, 6vw, 64px)/1.06 "Manrope"; letter-spacing: -.05em; }
+.article__summary { margin: 25px 0 34px; color: var(--ink-soft); font-size: 19px; line-height: 1.7; }
+.article__image { height: 450px; margin: 0 0 40px; overflow: hidden; border-radius: var(--radius); }
+.article__image img { height: 100%; object-fit: cover; }
+.article__body { white-space: pre-line; font-size: 17px; line-height: 1.9; }
+.article__documents { margin-top: 45px; padding: 25px; border-radius: var(--radius-sm); background: var(--teal-soft); }
+
+.campaigns { background: var(--pink-soft); }
+.campaign-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin-top: 42px; }
+.campaign-card { overflow: hidden; border-radius: var(--radius); background: #fff; box-shadow: 0 12px 35px rgba(32,33,36,.06); }
+.campaign-card img { height: 220px; object-fit: cover; }
+.campaign-card__body { padding: 26px; }
+.campaign-card h3 { margin: 0 0 9px; font: 700 24px/1.2 "Manrope"; }
+.campaign-card p { color: var(--ink-soft); line-height: 1.6; }
+.campaign-progress { height: 7px; margin: 20px 0 10px; overflow: hidden; border-radius: 10px; background: var(--line); }
+.campaign-progress span { display: block; height: 100%; border-radius: inherit; background: var(--pink); }
+.campaign-figures { display: flex; justify-content: space-between; font-size: 10px; color: var(--ink-soft); }
+.campaign-card a { margin-top: 20px; width: 100%; }
+
+.document-filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 30px; }
+.document-filters button { border: 1px solid var(--line); border-radius: 999px; padding: 10px 17px; background: #fff; font-size: 11px; font-weight: 700; cursor: pointer; }
+.document-filters button.active { border-color: var(--pink); background: var(--pink); color: #fff; }
+.document-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; }
+.document-card { min-height: 300px; display: flex; flex-direction: column; padding: 27px; border: 1px solid var(--line); border-radius: var(--radius); background: #fff; }
+.document-card__top { display: flex; justify-content: space-between; align-items: flex-start; }
+.document-card__icon { width: 50px; height: 50px; display: grid; place-items: center; border-radius: 50%; color: var(--teal-dark); background: var(--teal-soft); }
+.document-card__type { font-size: 9px; font-weight: 800; letter-spacing: .1em; color: var(--ink-soft); }
+.document-card > span { margin-top: 28px; color: var(--pink); font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; }
+.document-card h2 { margin: 8px 0; font: 700 21px/1.25 "Manrope"; }
+.document-card p { margin: 0 0 14px; color: var(--ink-soft); font-size: 12px; line-height: 1.6; }
+.document-card dl { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: auto 0 19px; padding-top: 14px; border-top: 1px solid var(--line); }
+.document-card dt { font-size: 8px; color: var(--ink-soft); text-transform: uppercase; }
+.document-card dd { margin: 3px 0 0; font-size: 10px; font-weight: 700; overflow-wrap: anywhere; }
+.document-card a { display: flex; align-items: center; justify-content: space-between; color: var(--pink); font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .07em; }
+.document-note { margin-top: 30px; display: flex; gap: 12px; padding: 20px; border-radius: var(--radius-sm); background: var(--yellow-soft); color: #654b0e; font-size: 12px; line-height: 1.6; }
+
+.donate-layout { display: grid; grid-template-columns: .85fr 1.15fr; gap: 28px; align-items: start; }
+.donation-methods, .receipt-request { padding: 34px; border: 1px solid var(--line); border-radius: var(--radius); background: #fff; }
+.donation-methods h2, .receipt-request h2 { margin: 0 0 9px; font: 700 31px/1.2 "Manrope"; }
+.donation-methods > p, .receipt-request > p { color: var(--ink-soft); line-height: 1.65; }
+.qr-panel { margin: 28px 0; padding: 25px; text-align: center; border-radius: var(--radius-sm); background: var(--gray); }
+.qr-panel img { width: min(250px, 100%); aspect-ratio: 1; margin: auto; object-fit: contain; background: #fff; }
+.qr-placeholder { min-height: 225px; display: grid; place-items: center; color: var(--ink-soft); border: 1px dashed #bbb; border-radius: 12px; }
+.qr-placeholder > div { text-align: center; }
+.qr-placeholder .icon { color: var(--pink); }
+.qr-placeholder strong, .qr-placeholder small { display: block; margin-top: 10px; }
+.bank-details { display: grid; gap: 0; margin: 25px 0; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.bank-row { display: grid; grid-template-columns: 145px 1fr auto; align-items: center; gap: 12px; padding: 13px 15px; border-bottom: 1px solid var(--line); }
+.bank-row:last-child { border-bottom: 0; }
+.bank-row span { color: var(--ink-soft); font-size: 10px; text-transform: uppercase; letter-spacing: .07em; }
+.bank-row strong { font-size: 13px; overflow-wrap: anywhere; }
+.copy-button { display: grid; place-items: center; width: 32px; height: 32px; border: 0; border-radius: 50%; background: var(--pink-soft); color: var(--pink); cursor: pointer; }
+.donation-warning { display: flex; gap: 10px; margin-top: 20px; padding: 16px; border-radius: 10px; color: #654b0e; background: var(--yellow-soft); font-size: 11px; line-height: 1.55; }
+.receipt-form { display: grid; gap: 17px; margin-top: 26px; }
+.receipt-form label, .field-label { display: grid; gap: 7px; color: #64676a; font-size: 9px; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; }
+.receipt-form input, .receipt-form select, .receipt-form textarea { width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 13px 14px; outline: none; background: #fbfbfa; font-size: 14px; }
+.receipt-form input:focus, .receipt-form select:focus, .receipt-form textarea:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(24,167,165,.1); }
+.receipt-form__row { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; }
+.receipt-success { padding: 28px; border-radius: 14px; background: var(--teal-soft); }
+.receipt-success h3 { font: 700 25px/1.2 "Manrope"; }
+.receipt-success code { display: block; margin: 14px 0; padding: 12px; border-radius: 8px; background: #fff; overflow-wrap: anywhere; }
+.receipt-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+
+.report-summary-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; margin-bottom: 34px; }
+.report-summary-card { padding: 26px; border-radius: var(--radius); background: #fff; border: 1px solid var(--line); }
+.report-summary-card span { color: var(--ink-soft); font-size: 9px; text-transform: uppercase; letter-spacing: .1em; }
+.report-summary-card strong { display: block; margin-top: 9px; font: 700 32px/1 "Manrope"; }
+.report-list { display: grid; gap: 12px; }
+.report-item { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 20px; padding: 22px 24px; border: 1px solid var(--line); border-radius: 14px; background: #fff; }
+.report-item h3 { margin: 0 0 5px; font: 700 18px/1.25 "Manrope"; }
+.report-item p { margin: 0; color: var(--ink-soft); font-size: 12px; }
+
+.not-found { min-height: 75vh; padding-top: 190px; text-align: center; }
+.not-found h1 { margin: 0; font: 800 90px/1 "Manrope"; color: var(--pink); }
+.not-found h2 { font: 700 30px/1.2 "Manrope"; }
+
+@media (max-width: 900px) {
+  .news-grid, .document-grid, .campaign-grid { grid-template-columns: repeat(2,1fr); }
+  .news-feature { grid-template-columns: 1fr; }
+  .donate-layout { grid-template-columns: 1fr; }
+  .report-summary-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 600px) {
+  .site-announcement { margin-top: 68px; }
+  .site-announcement .page-shell { align-items: flex-start; flex-wrap: wrap; justify-content: flex-start; gap: 7px 10px; padding-block: 10px; }
+  .site-announcement p { width: calc(100% - 92px); font-size: 10px; line-height: 1.4; }
+  .site-announcement a { margin-left: 91px; }
+  .page-hero { height: 430px; margin-top: 68px; }
+  .page-hero__content { padding-bottom: 48px; }
+  .page-hero h1 { font-size: 43px; }
+  .page-hero p { font-size: 14px; }
+  .content-section { padding: 70px 0; }
+  .route-intro, .news-preview__head { display: block; }
+  .route-intro > p { margin-top: 18px; }
+  .news-preview__head .button { margin-top: 22px; }
+  .news-grid, .document-grid, .campaign-grid { grid-template-columns: 1fr; }
+  .news-card__image { height: 220px; }
+  .news-feature__copy { padding: 30px 25px; }
+  .article { padding-top: 55px; }
+  .article__image { height: 300px; }
+  .donation-methods, .receipt-request { padding: 25px 20px; }
+  .receipt-form__row { grid-template-columns: 1fr; }
+  .bank-row { grid-template-columns: 105px 1fr auto; }
+  .report-summary-grid { grid-template-columns: 1fr; }
+  .report-item { grid-template-columns: 1fr; }
+}
