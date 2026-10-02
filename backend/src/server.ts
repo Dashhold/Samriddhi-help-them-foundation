@@ -9,7 +9,6 @@ async function start() {
   const app = await buildApp({
     sql,
     config,
-    serveFrontend: true,
     logger: {
       level: config.nodeEnv === "development" ? "debug" : "info",
       redact: {

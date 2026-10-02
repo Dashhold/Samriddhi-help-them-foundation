@@ -1,7 +1,5 @@
 import assert from "node:assert/strict";
-import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
-import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { readFile } from "node:fs/promises";
 import test from "node:test";
 import type { AppConfig } from "../config.js";
 import { siteContentSchema, type SiteContent } from "../content/site-content-schema.js";
@@ -212,33 +210,18 @@ function assertError(
   return payload.error;
 }
 
-test("single-service mode serves built files and SPA routes without shadowing the API", async () => {
-  const frontendDirectory = await mkdtemp(join(tmpdir(), "samriddhi-frontend-"));
-  await mkdir(join(frontendDirectory, "assets"));
-  await writeFile(join(frontendDirectory, "index.html"), "<!doctype html><title>Samriddhi app</title>");
-  await writeFile(join(frontendDirectory, "assets", "app.js"), "console.log('built asset')");
+test("API-only composition starts without frontend files and returns JSON 404 responses", async () => {
   const content = await defaultContent();
   const database = fakeDatabase(content);
-  const app = await buildApp({
-    sql: database.sql,
-    config: config(),
-    serveFrontend: true,
-    frontendDistDirectory: frontendDirectory,
-  });
+  const app = await buildApp({ sql: database.sql, config: config() });
 
   try {
-    const home = await app.inject({ method: "GET", url: "/", headers: { accept: "text/html" } });
-    assert.equal(home.statusCode, 200);
-    assert.match(home.body, /Samriddhi app/);
-
-    const spaRoute = await app.inject({ method: "GET", url: "/admin/settings", headers: { accept: "text/html" } });
-    assert.equal(spaRoute.statusCode, 200);
-    assert.equal(spaRoute.headers["cache-control"], "no-cache");
-    assert.match(spaRoute.body, /Samriddhi app/);
-
-    const asset = await app.inject({ method: "GET", url: "/assets/app.js" });
-    assert.equal(asset.statusCode, 200);
-    assert.match(asset.body, /built asset/);
+    for (const url of ["/", "/admin/settings", "/assets/app.js", "/not-a-client-route"]) {
+      const response = await app.inject({ method: "GET", url, headers: { accept: "text/html" } });
+      assertError(response, 404, "NOT_FOUND");
+      assert.match(String(response.headers["content-type"]), /^application\/json/);
+      assert.doesNotMatch(response.body, /<!doctype html>/i);
+    }
 
     const api = await app.inject({ method: "GET", url: "/api/content", headers: { accept: "text/html" } });
     assert.equal(api.statusCode, 200);
@@ -246,16 +229,8 @@ test("single-service mode serves built files and SPA routes without shadowing th
 
     const missingApi = await app.inject({ method: "GET", url: "/api/not-a-route", headers: { accept: "text/html" } });
     assertError(missingApi, 404, "NOT_FOUND");
-
-    const sameOriginCors = await app.inject({
-      method: "OPTIONS",
-      url: "/api/content",
-      headers: { origin: "https://api.example.org", "access-control-request-method": "GET" },
-    });
-    assert.equal(sameOriginCors.headers["access-control-allow-origin"], "https://api.example.org");
   } finally {
     await app.close();
-    await rm(frontendDirectory, { recursive: true, force: true });
   }
 });
 
@@ -342,19 +317,44 @@ test("public content hides private records while authenticated editors receive t
   assert.equal(health.json().migrations.current, true);
   assert.equal(health.json().migrations.expected, "003");
 
+  assert.equal(publicContent.headers["access-control-allow-origin"], undefined);
+
   const allowed = await app.inject({
     method: "OPTIONS",
     url: "/api/content",
-    headers: { origin: "https://www.example.org", "access-control-request-method": "GET" },
+    headers: {
+      origin: "https://www.example.org",
+      "access-control-request-method": "PUT",
+      "access-control-request-headers": "authorization, content-type, if-none-match",
+    },
   });
+  assert.equal(allowed.statusCode, 204);
   assert.equal(allowed.headers["access-control-allow-origin"], "https://www.example.org");
+  assert.equal(allowed.headers["access-control-allow-credentials"], undefined);
+  const allowedMethods = String(allowed.headers["access-control-allow-methods"])
+    .split(",")
+    .map((method) => method.trim());
+  assert.deepEqual(allowedMethods, ["GET", "PUT", "POST", "OPTIONS"]);
+  const allowedHeaders = String(allowed.headers["access-control-allow-headers"])
+    .toLowerCase()
+    .split(",")
+    .map((header) => header.trim());
+  assert.deepEqual(allowedHeaders, ["authorization", "content-type", "if-none-match"]);
 
-  const denied = await app.inject({
-    method: "OPTIONS",
-    url: "/api/content",
-    headers: { origin: "https://attacker.example", "access-control-request-method": "GET" },
-  });
-  assert.equal(denied.headers["access-control-allow-origin"], undefined);
+  for (const origin of [
+    "https://api.example.org",
+    "https://attacker.example",
+    "https://www.example.org.evil.invalid",
+    "https://www.example.org/",
+  ]) {
+    const denied = await app.inject({
+      method: "OPTIONS",
+      url: "/api/content",
+      headers: { origin, "access-control-request-method": "GET" },
+    });
+    assert.equal(denied.headers["access-control-allow-origin"], undefined, origin);
+    assert.equal(denied.headers["access-control-allow-credentials"], undefined, origin);
+  }
   await app.close();
 });
 

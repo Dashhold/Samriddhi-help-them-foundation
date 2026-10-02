@@ -124,16 +124,17 @@ function AdminGate() {
             <Icon name="settings" size={25} />
           </span>
           <span className="eyebrow">Backend setup required</span>
-          <h1>Connect the local Railway API</h1>
+          <h1>Connect the Railway API</h1>
           <p>
-            Production uses the same Railway origin automatically. Local Vite
-            development needs an API override when Fastify runs separately.
+            Production requires the backend&apos;s public Railway origin as a
+            frontend build variable. Local Vite development can point the same
+            variable at a loopback API.
           </p>
           <div className="admin-auth-code">
-            <code>VITE_API_URL=http://localhost:3000</code>
+            <code>VITE_API_URL=https://backend-domain.up.railway.app</code>
           </div>
           <p className="admin-auth-note">
-            Set the optional frontend variable locally, then reload this page.
+            Set the variable on the frontend service, then redeploy it.
           </p>
           <AppLink className="admin-button admin-button--secondary" to="/">
             Return to website

@@ -1,17 +1,38 @@
 import { z } from "zod";
 
-const originSchema = z.string().transform((value, context) => {
-  try {
-    const url = new URL(value.trim());
-    if (!["http:", "https:"].includes(url.protocol) || url.pathname !== "/" || url.search || url.hash) {
-      throw new Error("Origin must contain only scheme, host, and optional port.");
+function isLoopbackHostname(hostname: string) {
+  return hostname === "localhost" || /^127(?:\.\d{1,3}){3}$/.test(hostname) || hostname === "[::1]";
+}
+
+// Railway shows domains without a scheme, so accept "my-app.up.railway.app" as HTTPS.
+function withScheme(value: string) {
+  return value && !/^[a-z][a-z0-9+.-]*:\/\//i.test(value) ? `https://${value}` : value;
+}
+
+function exactOriginSchema(variableName: string) {
+  return z.string().transform((rawValue, context) => {
+    const value = withScheme(rawValue.trim());
+    try {
+      if (!/^https?:\/\/[^/?#]+\/?$/i.test(value)) {
+        throw new Error("Origin must contain only scheme, host, and optional port.");
+      }
+      const url = new URL(value);
+      if (
+        !["http:", "https:"].includes(url.protocol) ||
+        url.username ||
+        url.password ||
+        url.hostname.includes("*") ||
+        (url.protocol === "http:" && !isLoopbackHostname(url.hostname))
+      ) {
+        throw new Error("Origin is not trusted.");
+      }
+      return url.origin;
+    } catch {
+      context.addIssue({ code: "custom", message: `Invalid ${variableName} origin: ${rawValue}` });
+      return z.NEVER;
     }
-    return url.origin;
-  } catch {
-    context.addIssue({ code: "custom", message: `Invalid frontend origin: ${value}` });
-    return z.NEVER;
-  }
-});
+  });
+}
 
 const databaseSchema = z.object({
   DATABASE_URL: z.string().min(1, "DATABASE_URL is required."),
@@ -22,10 +43,10 @@ const appSchema = databaseSchema.extend({
   NODE_ENV: z.enum(["development", "test", "production"]).default("production"),
   HOST: z.string().default("0.0.0.0"),
   PORT: z.coerce.number().int().min(1).max(65535).default(3000),
-  PUBLIC_API_URL: originSchema,
+  PUBLIC_API_URL: exactOriginSchema("PUBLIC_API_URL"),
   FRONTEND_ORIGINS: z.string().default("").transform((value, context) => {
     const values = value.split(",").map((origin) => origin.trim()).filter(Boolean);
-    const result = z.array(originSchema).safeParse(values);
+    const result = z.array(exactOriginSchema("FRONTEND_ORIGINS")).safeParse(values);
     if (!result.success) {
       for (const issue of result.error.issues) {
         context.addIssue({ code: "custom", message: issue.message });
@@ -39,6 +60,14 @@ const appSchema = databaseSchema.extend({
   SESSION_TTL_HOURS: z.coerce.number().int().min(1).max(168).default(8),
   REQUEST_BODY_LIMIT_BYTES: z.coerce.number().int().min(1024).max(12 * 1024 * 1024).default(11 * 1024 * 1024),
 });
+
+// Fill PUBLIC_API_URL from the domain Railway injects, so the API boots without extra setup.
+function withRailwayDefaults(env: NodeJS.ProcessEnv): NodeJS.ProcessEnv {
+  const publicApiUrl =
+    env.PUBLIC_API_URL?.trim() ||
+    (env.RAILWAY_PUBLIC_DOMAIN?.trim() ? `https://${env.RAILWAY_PUBLIC_DOMAIN.trim()}` : `http://localhost:${env.PORT ?? 3000}`);
+  return { ...env, PUBLIC_API_URL: publicApiUrl };
+}
 
 export type DatabaseConfig = {
   databaseUrl: string;
@@ -71,7 +100,7 @@ export function loadDatabaseConfig(env: NodeJS.ProcessEnv = process.env): Databa
 }
 
 export function loadAppConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
-  const result = appSchema.safeParse(env);
+  const result = appSchema.safeParse(withRailwayDefaults(env));
   if (!result.success) throw new Error(`Invalid server configuration: ${formatConfigError(result.error)}`);
   return {
     nodeEnv: result.data.NODE_ENV,

@@ -1,78 +1,48 @@
-# Single-service Railway deployment
+# Railway deployment (two services)
 
-## 1. Create the services
+The repository contains two independent apps. Each Railway service builds only its own folder using that folder's `Dockerfile`, plus one Railway PostgreSQL service.
 
-Create one Railway project with:
+| Service  | Root Directory | Config File Path         | What runs                                                     |
+| -------- | -------------- | ------------------------ | ------------------------------------------------------------- |
+| Frontend | `/frontend`    | `/frontend/railway.json` | Node 22 builds the Vite site; Caddy serves `dist` on `$PORT`. |
+| Backend  | `/backend`     | `/backend/railway.json`  | Node 22 API; runs database migrations, then starts Fastify.   |
 
-1. A PostgreSQL service.
-2. One application service rooted at the repository root.
-3. A public domain on the application service.
+## Setup
 
-The committed deployment configuration uses Nixpacks. `nixpacks.toml` installs dependencies exactly once with `npm ci --include=dev`, then runs `npm run build` in a separate phase. `railway.json` applies migrations with `npm run migrate`, starts Fastify with `npm start`, and checks `/health`. Fastify serves both `/api/*` and `frontend/dist`, including an HTML5 SPA fallback for routes such as `/admin`.
+1. In each service, open **Settings**:
+   - Set **Root Directory** as shown above.
+   - Set **Config File Path** as shown above. Railway does not look inside the root directory for this file. If the field still points at `/railway.json`, change it, because that file no longer exists.
+   - Clear any custom **Build Command** and **Start Command**.
+   - **Builder** should show **Dockerfile**.
+2. Under **Settings → Networking**, generate a public domain for both services.
+3. Backend variables:
 
-## 2. Configure server variables
+   ```text
+   DATABASE_URL=${{Postgres.DATABASE_URL}}
+   ADMIN_USERNAME=<admin username>
+   ADMIN_PASSWORD=<admin password, at least 12 characters>
+   FRONTEND_ORIGINS=https://<frontend-domain>
+   ```
 
-Set these on the Railway application service only:
+   - `FRONTEND_ORIGINS` is optional. When it is empty, any site can call the API.
+   - `PUBLIC_API_URL` is optional and defaults to the backend's Railway domain.
+   - Keep `DATABASE_SSL` unset when using the private `DATABASE_URL`. Set it to `require` only for a public database URL that needs TLS.
+   - Railway provides `PORT` automatically.
 
-```text
-DATABASE_URL=<reference the PostgreSQL private DATABASE_URL>
-DATABASE_SSL=disable
-PUBLIC_API_URL=https://<application-domain>
-ADMIN_USERNAME=<private administrator username>
-ADMIN_PASSWORD=<private random password of at least 12 characters>
-SESSION_TTL_HOURS=8
-REQUEST_BODY_LIMIT_BYTES=11534336
-HOST=0.0.0.0
-NODE_ENV=production
-```
+4. Frontend variable:
 
-Railway supplies `PORT`. Use `DATABASE_SSL=require` only when the selected database endpoint requires TLS. Production uses one origin, and the frontend ignores `VITE_API_URL` outside Vite development; omit `FRONTEND_ORIGINS` and `VITE_API_URL` in Railway. Never expose database or administrator values through `VITE_*` variables.
+   ```text
+   VITE_API_URL=https://<backend-domain>
+   ```
 
-For optional local Vite development against Fastify on another origin, set `VITE_API_URL=http://localhost:3000` in the frontend environment and add the exact Vite origin (for example `http://localhost:8443`) to backend `FRONTEND_ORIGINS`. Wildcards and URL paths are rejected.
+   This value is compiled into the site at build time. After you change it, redeploy the frontend.
 
-## 3. Build, migrate, and start
+5. Deploy the backend first, then the frontend.
 
-The committed Railway phases and root scripts are the deployment contract:
+## Check after deploy
 
-```text
-npm ci --include=dev
-npm run build
-npm run migrate
-npm start
-```
+- `https://<backend-domain>/health` returns HTTP 200.
+- `https://<frontend-domain>/` loads the site.
+- `https://<frontend-domain>/admin` shows the admin login. Signing in with `ADMIN_USERNAME` and `ADMIN_PASSWORD` opens the dashboard.
 
-`--include=dev` keeps the frontend Vite/TypeScript and backend TypeScript build tools available even when Railway sets production-oriented npm options. Do not add dashboard install or build command overrides; they can duplicate or replace the committed Nixpacks phases.
-
-A successful deployment must report HTTP 200 from `/health`, `database: "ready"`, `migrations.current: true`, and expected migration `003`. The migration command is transaction-locked and validates complete version/name/checksum history; a removed, renamed, or changed applied migration blocks readiness and deployment.
-
-The shared PostgreSQL login counter protects the administrator identity across Railway instances and changing IP addresses. Its five-attempt window expires after one minute, while separate IP controls remain active.
-
-## 4. Production smoke checklist
-
-- `/health` is HTTP 200 and reports all three migrations current.
-- `/` loads the built React site from Fastify without `VITE_API_URL`.
-- Direct visits and refreshes at `/admin`, `/donate`, and a nested news path return the SPA; unknown `/api/*` paths remain JSON 404 responses.
-- Public `GET /api/content` omits disabled focus areas, inactive campaigns, draft news/reports, non-public documents, all asset URLs belonging to those hidden records, disabled announcement copy/links, paused transfer destinations, and every campaign nested under disabled fundraising.
-- Authenticated `GET /api/admin/content` returns the complete unredacted editor document; unauthenticated administrator reads/writes return the standard 401 envelope.
-- The contact-form credential shortcut succeeds only with Railway credentials. Invalid credentials, an API timeout, and a normal valid enquiry continue to the ordinary Prepare Email behavior without revealing the hidden route.
-- Direct `/admin` refresh restores and revalidates a live session; logout, expiry, revocation, and credential rotation block it.
-- Allowed image/PDF uploads return same-service absolute URLs and survive redeployment; spoofed, disallowed, and over-10-MiB files fail.
-- Monthly/yearly donation reads require authentication, return only paid rows, cap results at 5,000, and include `Cache-Control: no-store`.
-- CSV exports open formula-looking donor fields as text rather than formulas.
-- “Preview thank-you certificate” opens a native modal dialog containing obvious sample/preview markings. Check that forward Tab and reverse Shift+Tab remain inside the dialog, Escape and backdrop click close it, focus returns to the preview opener, and Browser Print/Save as PDF prints only the marked certificate without implying payment verification.
-- Every file under `frontend/public/documents/` opens successfully and matches the pre-move hashes in `.agents/tasks/railway-backend-migration/move-evidence.json`.
-
-## 5. Backup and recovery
-
-Enable Railway PostgreSQL backups and periodically test restoration. Before imports or major CMS edits, create a backup and record the current health response. For recovery, stop writes, restore the selected snapshot (preferably into a replacement service), update `DATABASE_URL` if needed, run `npm run migrate`, redeploy, and complete the smoke checklist before resuming edits.
-
-For a disposable staging migration check, point `DATABASE_URL` at a temporary Railway PostgreSQL database and run:
-
-```text
-npm ci
-npm run build
-npm run migrate
-npm run migrate
-```
-
-Then assert exactly one `site_content` row with `id='main'`, exactly one seeded revision before any editor writes, and confirm that changing, renaming, or removing an applied migration causes both `npm run migrate` and `/health` to reject the history. Destroy the temporary database after recording the results.
+If the frontend build log shows `nodejs_18`, `caddy fmt`, or Nixpacks, the service is not using the Dockerfile. Re-check its Root Directory, Config File Path, and Builder settings, then redeploy with the build cache cleared.

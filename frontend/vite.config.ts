@@ -1,4 +1,9 @@
-import { defineConfig, type HtmlTagDescriptor, type Plugin } from "vite"
+import {
+  defineConfig,
+  loadEnv,
+  type HtmlTagDescriptor,
+  type Plugin,
+} from "vite"
 import react from "@vitejs/plugin-react"
 import tailwindcss from "@tailwindcss/vite"
 import path from "node:path"
@@ -9,6 +14,13 @@ import siteConfiguration from "./.figma/make/site.json" with { type: "json" }
 export default defineConfig(({ mode }) => {
   // .figma/make/deploy-preview passes `--mode development` for cached-preview builds.
   const emitSourcemaps = mode === "development"
+  const environment = loadEnv(mode, import.meta.dirname, "VITE_")
+  if (mode === "production" && !environment.VITE_API_URL?.trim()) {
+    // The site still builds and shows bundled content; admin features need the backend URL.
+    console.warn(
+      "\n[warning] VITE_API_URL is not set. Set it to the backend Railway URL and redeploy the frontend.\n",
+    )
+  }
 
   return {
     base: process.env.FIGMA_PUBLIC_URL

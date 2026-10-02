@@ -1,27 +1,24 @@
 # Samriddhi Help Team Foundation
 
-A single-service Railway application with a React/Vite frontend, Fastify API, and Railway PostgreSQL.
+NGO website with an admin dashboard.
 
-## Layout
+- `frontend/` contains the React and Vite public site and admin UI. It deploys as its own Railway service.
+- `backend/` contains the Fastify API with PostgreSQL for content, admin login, uploads, and donation reports. It deploys as its own Railway service.
 
-- `frontend/` — public site and administrator UI; Vite builds to `frontend/dist`.
-- `backend/` — Fastify API, PostgreSQL migrations, authentication, CMS, assets, and donor reporting.
-- `nixpacks.toml` — deterministic Railway install and build phases.
-- `railway.json` — Railway builder, migration, start, and health configuration.
+## Local development
 
-## Local commands
-
-Use Node.js 22 from the repository root:
+Use Node.js 22.12 or newer, within 22.x.
 
 ```text
-npm ci
-npm run build
+cd backend
+npm install
 npm test
-npm run format:check
-npm run migrate
-npm start
+
+cd ../frontend
+npm install
+npm run dev
 ```
 
-`npm start` serves the API and the built frontend from one Fastify process. For local frontend hot reload, run the existing Vite command from `frontend/` and set `VITE_API_URL` only when the API is on another origin. Do not start another Vite server when the Figma Make preview is already running.
+To point the local frontend at a local backend, create `frontend/.env.local` with `VITE_API_URL=http://localhost:3000`. Backend variables are listed in `backend/.env.example`.
 
-See `RAILWAY_DEPLOYMENT.md` for production variables and verification.
+For deployment, see `RAILWAY_DEPLOYMENT.md`.

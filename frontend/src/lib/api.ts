@@ -1,12 +1,10 @@
-import { resolveApiBaseUrl } from "./api-origin"
+import { apiEndpoint, resolveApiBaseUrl } from "./api-origin"
 
 const apiBaseUrl = resolveApiBaseUrl({
   development: import.meta.env.DEV,
   production: import.meta.env.PROD,
-  configuredUrl: import.meta.env.DEV ? import.meta.env.VITE_API_URL : undefined,
+  configuredUrl: import.meta.env.VITE_API_URL,
 })
-const configuredApiUrl = apiBaseUrl ?? ""
-const useSameOriginApi = apiBaseUrl === ""
 
 export const isApiConfigured = apiBaseUrl !== null
 
@@ -39,9 +37,7 @@ type ErrorPayload = {
 }
 
 function endpoint(path: string) {
-  const normalizedPath = path.startsWith("/") ? path : `/${path}`
-  if (configuredApiUrl) return `${configuredApiUrl}${normalizedPath}`
-  if (useSameOriginApi) return normalizedPath
+  if (apiBaseUrl) return apiEndpoint(apiBaseUrl, path)
   throw new ApiError(
     "The website API is not configured.",
     0,

@@ -1,12 +1,10 @@
-import { fileURLToPath } from "node:url";
 import Fastify, { LogController, type FastifyServerOptions } from "fastify";
 import cors from "@fastify/cors";
 import multipart from "@fastify/multipart";
 import rateLimit from "@fastify/rate-limit";
-import fastifyStatic from "@fastify/static";
 import type { AppConfig } from "./config.js";
 import type { Database } from "./db.js";
-import { errorEnvelope, installErrorHandling } from "./errors.js";
+import { installErrorHandling } from "./errors.js";
 import { createRequireAdmin } from "./auth/middleware.js";
 import healthRoutes from "./routes/health.js";
 import authRoutes from "./routes/auth.js";
@@ -18,18 +16,12 @@ export type BuildAppOptions = {
   sql: Database;
   config: AppConfig;
   logger?: FastifyServerOptions["logger"];
-  serveFrontend?: boolean;
-  frontendDistDirectory?: string;
 };
-
-const defaultFrontendDistDirectory = fileURLToPath(new URL("../../frontend/dist/", import.meta.url));
 
 export async function buildApp({
   sql,
   config,
   logger = false,
-  serveFrontend = false,
-  frontendDistDirectory = defaultFrontendDistDirectory,
 }: BuildAppOptions) {
   const app = Fastify({
     logger,
@@ -40,10 +32,11 @@ export async function buildApp({
   });
   app.decorateRequest("admin", null);
 
-  const allowedOrigins = new Set([config.publicApiUrl, ...config.frontendOrigins]);
+  // With FRONTEND_ORIGINS unset any site may call the API (auth uses bearer tokens, not cookies).
+  const allowedOrigins = new Set(config.frontendOrigins);
   await app.register(cors, {
     origin(origin, callback) {
-      callback(null, !origin || allowedOrigins.has(origin));
+      callback(null, !origin || allowedOrigins.size === 0 || allowedOrigins.has(origin));
     },
     credentials: false,
     methods: ["GET", "PUT", "POST", "OPTIONS"],
@@ -66,38 +59,13 @@ export async function buildApp({
     },
   });
 
-  installErrorHandling(
-    app,
-    serveFrontend
-      ? ((request, reply) => {
-          const pathname = request.url.split("?", 1)[0] ?? "";
-          const acceptsHtml = request.headers.accept?.includes("text/html") ?? false;
-          if (request.method === "GET" && acceptsHtml && pathname !== "/api" && !pathname.startsWith("/api/")) {
-            reply.header("Cache-Control", "no-cache");
-            return reply.sendFile("index.html");
-          }
-          return reply
-            .status(404)
-            .send(errorEnvelope("NOT_FOUND", "The requested resource was not found.", request.id));
-        })
-      : undefined,
-  );
+  installErrorHandling(app);
   const requireAdmin = createRequireAdmin(sql);
   await app.register(healthRoutes, { sql });
   await app.register(authRoutes, { sql, config, requireAdmin });
   await app.register(contentRoutes, { sql, requireAdmin });
   await app.register(assetRoutes, { sql, config, requireAdmin });
   await app.register(donationRoutes, { sql, requireAdmin });
-
-  if (serveFrontend) {
-    await app.register(fastifyStatic, {
-      root: frontendDistDirectory,
-      prefix: "/",
-      setHeaders(response, filePath) {
-        if (filePath.endsWith("index.html")) response.header("Cache-Control", "no-cache");
-      },
-    });
-  }
 
   return app;
 }

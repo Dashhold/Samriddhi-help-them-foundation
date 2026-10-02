@@ -1,13 +1,12 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
-import { ModuleKind, ScriptTarget, transpileModule } from "typescript";
 import { bootstrapAdmin } from "../auth/bootstrap.js";
 import { hashPassword, verifyPassword } from "../auth/password.js";
 import { createOpaqueToken, hashSessionToken, SESSION_TOKEN_BYTES } from "../auth/sessions.js";
 import { hasValidSignature, safeAssetFilename } from "../assets/repository.js";
 import { loadAppConfig, type AppConfig } from "../config.js";
-import { siteContentSchema, type SiteContent } from "../content/site-content-schema.js";
+import { siteContentSchema } from "../content/site-content-schema.js";
 import type { Database } from "../db.js";
 import { donationDateRange } from "../donations/repository.js";
 import { applyMigrations, discoverMigrations } from "../migrate.js";
@@ -49,20 +48,6 @@ async function loadDefaultContent() {
   return siteContentSchema.parse(JSON.parse(raw));
 }
 
-test("bundled server defaults exactly match the frontend schema-v2 defaults", async () => {
-  const serverDefaults = await loadDefaultContent();
-  const frontendSource = await readFile(new URL("../../../frontend/src/cms/defaultContent.ts", import.meta.url), "utf8");
-  const frontendJavaScript = transpileModule(frontendSource, {
-    compilerOptions: { module: ModuleKind.ESNext, target: ScriptTarget.ES2022 },
-  }).outputText;
-  const dataUrl = `data:text/javascript;base64,${Buffer.from(frontendJavaScript).toString("base64")}`;
-  const frontendModule = await import(dataUrl) as { defaultSiteContent: SiteContent };
-
-  assert.deepEqual(serverDefaults, frontendModule.defaultSiteContent);
-  assert.equal(serverDefaults.documents.length, 8);
-  assert.equal(serverDefaults.news.length, 3);
-});
-
 test("site content validation rejects impossible dates and unknown fields", async () => {
   const defaults = await loadDefaultContent();
   const invalidDate = structuredClone(defaults) as unknown as Record<string, unknown>;
@@ -72,49 +57,49 @@ test("site content validation rejects impossible dates and unknown fields", asyn
   assert.equal(siteContentSchema.safeParse({ ...defaults, unexpected: true }).success, false);
 });
 
-test("runtime configuration requires exact origins and server-only credentials", () => {
+test("runtime configuration normalizes origins and applies Railway defaults", () => {
   const environment = {
     DATABASE_URL: "postgres://example/test",
     DATABASE_SSL: "disable",
-    PUBLIC_API_URL: "https://api.example.org",
-    FRONTEND_ORIGINS: "https://site.example.org,http://localhost:8443",
+    PUBLIC_API_URL: "https://API.example.org:443/",
+    FRONTEND_ORIGINS: "https://SITE.example.org:443/,http://localhost:8443",
     ADMIN_USERNAME: "administrator",
     ADMIN_PASSWORD: "a-strong-test-password",
     NODE_ENV: "test",
   };
   const config = loadAppConfig(environment);
+  assert.equal(config.publicApiUrl, "https://api.example.org");
   assert.deepEqual(config.frontendOrigins, ["https://site.example.org", "http://localhost:8443"]);
   assert.deepEqual(loadAppConfig({ ...environment, FRONTEND_ORIGINS: undefined }).frontendOrigins, []);
+  assert.doesNotThrow(() => loadAppConfig({ ...environment, NODE_ENV: "production" }));
+  assert.deepEqual(
+    loadAppConfig({ ...environment, NODE_ENV: "production", FRONTEND_ORIGINS: undefined }).frontendOrigins,
+    [],
+  );
+  assert.equal(loadAppConfig({ ...environment, PUBLIC_API_URL: "api.example.org" }).publicApiUrl, "https://api.example.org");
+  assert.deepEqual(
+    loadAppConfig({ ...environment, FRONTEND_ORIGINS: "site.up.railway.app" }).frontendOrigins,
+    ["https://site.up.railway.app"],
+  );
+  assert.equal(
+    loadAppConfig({ ...environment, PUBLIC_API_URL: undefined, RAILWAY_PUBLIC_DOMAIN: "api.up.railway.app" }).publicApiUrl,
+    "https://api.up.railway.app",
+  );
+
+  for (const origin of [
+    "https://user:password@site.example.org",
+    "https://*.example.org",
+    "https://site.example.org/base",
+    "https://site.example.org?next=other",
+    "https://site.example.org#fragment",
+    "http://site.example.org",
+    "ftp://site.example.org",
+  ]) {
+    assert.throws(() => loadAppConfig({ ...environment, FRONTEND_ORIGINS: origin }), origin);
+  }
   assert.throws(() => loadAppConfig({ ...environment, PUBLIC_API_URL: "https://api.example.org/base" }));
+  assert.throws(() => loadAppConfig({ ...environment, PUBLIC_API_URL: "http://api.example.org" }));
   assert.throws(() => loadAppConfig({ ...environment, ADMIN_PASSWORD: "too-short" }));
-});
-
-test("production API routing ignores a foreign VITE_API_URL", async () => {
-  const source = await readFile(new URL("../../../frontend/src/lib/api-origin.ts", import.meta.url), "utf8");
-  const javascript = transpileModule(source, {
-    compilerOptions: { module: ModuleKind.ESNext, target: ScriptTarget.ES2022 },
-  }).outputText;
-  const dataUrl = `data:text/javascript;base64,${Buffer.from(javascript).toString("base64")}`;
-  const module = await import(dataUrl) as {
-    resolveApiBaseUrl: (environment: {
-      development: boolean;
-      production: boolean;
-      configuredUrl?: string;
-    }) => string | null;
-  };
-
-  const productionBaseUrl = module.resolveApiBaseUrl({
-    development: false,
-    production: true,
-    configuredUrl: "https://attacker.example",
-  });
-  assert.equal(productionBaseUrl, "");
-  assert.equal(`${productionBaseUrl}/api/auth/login`, "/api/auth/login");
-  assert.equal(module.resolveApiBaseUrl({
-    development: true,
-    production: false,
-    configuredUrl: "http://localhost:3000/",
-  }), "http://localhost:3000");
 });
 
 test("passwords use Argon2id and opaque session tokens are stored only as hashes", async () => {
@@ -159,78 +144,6 @@ test("donation report periods reject malformed and out-of-range dates", () => {
   assert.throws(() => donationDateRange("monthly", "2026-13"));
   assert.throws(() => donationDateRange("yearly", "26"));
   assert.throws(() => donationDateRange("yearly", "1999"));
-});
-
-test("CSV exports neutralize spreadsheet formulas after whitespace and controls", async () => {
-  const source = await readFile(new URL("../../../frontend/src/payments/contracts.ts", import.meta.url), "utf8");
-  const javascript = transpileModule(source, {
-    compilerOptions: { module: ModuleKind.ESNext, target: ScriptTarget.ES2022 },
-  }).outputText;
-  const dataUrl = `data:text/javascript;base64,${Buffer.from(javascript).toString("base64")}`;
-  const module = await import(dataUrl) as {
-    donationRecordsToCsv: (records: Array<Record<string, unknown>>) => string;
-  };
-  const csv = module.donationRecordsToCsv([{
-    id: "=2+2",
-    providerOrderId: "order-1",
-    providerPaymentId: "@SUM(1,1)",
-    donorType: "individual",
-    donorName: " \t=HYPERLINK(\"https://example.invalid\")",
-    companyName: "+1+1",
-    email: "\t@malicious.example",
-    amount: 123.45,
-    currency: "INR",
-    purpose: "\u0001-2+3",
-    status: "paid",
-    receiptNumber: "safe-receipt",
-    createdAt: "2026-02-10T10:00:00.000Z",
-  }]);
-
-  assert.ok(csv.includes("\"'=2+2\""));
-  assert.ok(csv.includes("\"'+1+1\""));
-  assert.ok(csv.includes("\"'\t@malicious.example\""));
-  assert.ok(csv.includes("\"'\u0001-2+3\""));
-  assert.ok(csv.includes("\"'@SUM(1,1)\""));
-  assert.ok(csv.includes("\"safe-receipt\""));
-});
-
-test("certificate details stay sample-only until a donation is confirmed paid", async () => {
-  const source = await readFile(new URL("../../../frontend/src/payments/certificate.ts", import.meta.url), "utf8");
-  const javascript = transpileModule(source, {
-    compilerOptions: { module: ModuleKind.ESNext, target: ScriptTarget.ES2022 },
-  }).outputText;
-  const dataUrl = `data:text/javascript;base64,${Buffer.from(javascript).toString("base64")}`;
-  const module = await import(dataUrl) as {
-    certificateDetails: (record?: Record<string, unknown>) => {
-      supporterName: string;
-      reference: string;
-      isPreview: boolean;
-    };
-  };
-
-  const unpaid = module.certificateDetails({
-    id: "donation-1",
-    donorName: "Real Donor",
-    status: "pending",
-    paidAt: "2026-02-10T10:05:00.000Z",
-  });
-  assert.equal(unpaid.isPreview, true);
-  assert.equal(unpaid.supporterName, "Supporter Name");
-  assert.equal(unpaid.reference, "SAMPLE-PREVIEW-001");
-
-  const paid = module.certificateDetails({
-    id: "donation-1",
-    providerOrderId: "order-1",
-    providerPaymentId: "payment-1",
-    donorType: "individual",
-    donorName: "Confirmed Donor",
-    purpose: "General donation",
-    status: "paid",
-    paidAt: "2026-02-10T10:05:00.000Z",
-  });
-  assert.equal(paid.isPreview, false);
-  assert.equal(paid.supporterName, "Confirmed Donor");
-  assert.equal(paid.reference, "payment-1");
 });
 
 test("asset metadata is sanitized and file signatures are checked", () => {

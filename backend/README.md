@@ -1,10 +1,10 @@
 # Samriddhi Railway web service
 
-Node.js 22/TypeScript service for the Samriddhi Help Team Foundation site. Fastify serves the API, built React application, and SPA fallback from one Railway deployment; PostgreSQL stores administrator sessions, CMS content, uploaded assets, and donation records.
+Node.js 22/TypeScript API for the Samriddhi Help Team Foundation site, deployed as its own Railway service with Root Directory `/backend`. PostgreSQL stores administrator sessions, CMS content, uploaded assets, and donation records. The frontend is a separate Railway service.
 
 ## Commands
 
-Run deployment commands from the repository root so both npm workspaces use the root lockfile:
+Run from this folder:
 
 ```text
 npm ci
@@ -14,21 +14,21 @@ npm run migrate
 npm start
 ```
 
-`npm run migrate` takes a PostgreSQL advisory transaction lock, compares complete applied/source version, name, and checksum history, and is safe to repeat. `GET /health` returns HTTP 200 only when PostgreSQL is reachable and the complete migration history (currently through `003`) is applied unchanged.
+`npm start` applies pending migrations and then starts the API, so a Railway deploy needs no separate migration step. `npm run migrate` takes a PostgreSQL advisory transaction lock, compares complete applied/source version, name, and checksum history, and is safe to repeat. `GET /health` returns HTTP 200 only when PostgreSQL is reachable and the complete migration history (currently through `003`) is applied unchanged.
 
 ## Server variables
 
 - `DATABASE_URL`: Railway PostgreSQL connection string; prefer the private project reference.
 - `DATABASE_SSL`: `disable` for Railway private networking, or `require` for an endpoint requiring TLS.
-- `PUBLIC_API_URL`: public origin of this same Railway web service, with no path.
-- `FRONTEND_ORIGINS`: optional comma-separated exact origins for separate local frontend development. Same-origin production needs no entry.
+- `PUBLIC_API_URL`: optional public origin of this backend, used for uploaded-asset links. Defaults to `https://$RAILWAY_PUBLIC_DOMAIN`.
+- `FRONTEND_ORIGINS`: optional comma-separated frontend URLs allowed by CORS, for example `https://your-frontend.up.railway.app`. When empty, any origin is allowed.
 - `ADMIN_USERNAME`: private environment-managed administrator username.
 - `ADMIN_PASSWORD`: private random password of 12–512 characters.
 - `SESSION_TTL_HOURS`: optional; defaults to 8 and is capped at 168.
 - `REQUEST_BODY_LIMIT_BYTES`: optional; defaults to 11 MiB and must support the 10 MiB upload limit.
 - `PORT`, `HOST`, `NODE_ENV`: Railway supplies `PORT`; bind `HOST` to `0.0.0.0`.
 
-Never expose database or administrator values through a `VITE_*` variable. `VITE_API_URL` is only an optional local-development override when Vite and Fastify use different origins.
+Never expose database or administrator values through a `VITE_*` variable. The frontend service only needs `VITE_API_URL`, set to this backend's public URL.
 
 ## Authentication model
 
@@ -45,7 +45,6 @@ Public:
 - `GET /api/assets/:id/:filename`
 - `POST /api/auth/login`
 - `POST /api/auth/logout`
-- Built frontend files and non-API SPA routes
 
 Administrator bearer token required:
 
@@ -61,4 +60,4 @@ Public content omits disabled focus areas, inactive campaigns, draft news and re
 
 Enable Railway PostgreSQL backups and periodically test restoration. Before a major content change, create a backup and record `/health`. To restore, stop writes, restore into a replacement database when possible, update `DATABASE_URL`, run `npm run migrate`, redeploy, then verify health, public and administrator content, an uploaded asset, login/logout, and donation reporting.
 
-Audit `admin_audit_log`, expired sessions, revision growth, asset size, and donation-data retention. Static governance files remain in `frontend/public/documents/` and are copied unchanged into the frontend build.
+Audit `admin_audit_log`, expired sessions, revision growth, asset size, and donation-data retention. Static governance files live in `frontend/public/documents/` and are served by the frontend service.

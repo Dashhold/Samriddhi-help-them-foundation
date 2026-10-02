@@ -1,7 +1,0 @@
-[phases.install]
-dependsOn = ["setup"]
-cmds = ["npm ci --include=dev"]
-
-[phases.build]
-dependsOn = ["install"]
-cmds = ["npm run build"]

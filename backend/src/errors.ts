@@ -1,4 +1,4 @@
-import type { FastifyError, FastifyInstance, FastifyReply, FastifyRequest, RouteHandlerMethod } from "fastify";
+import type { FastifyError, FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { ZodError } from "zod";
 
 export type ErrorCode =
@@ -32,10 +32,9 @@ function sendError(reply: FastifyReply, requestId: string, statusCode: number, c
   return reply.status(statusCode).send(errorEnvelope(code, message, requestId));
 }
 
-export function installErrorHandling(app: FastifyInstance, notFoundHandler?: RouteHandlerMethod) {
-  app.setNotFoundHandler(
-    notFoundHandler ?? ((request, reply) =>
-      sendError(reply, request.id, 404, "NOT_FOUND", "The requested resource was not found.")),
+export function installErrorHandling(app: FastifyInstance) {
+  app.setNotFoundHandler((request, reply) =>
+    sendError(reply, request.id, 404, "NOT_FOUND", "The requested resource was not found."),
   );
 
   app.setErrorHandler((error: FastifyError | AppError | ZodError, request: FastifyRequest, reply: FastifyReply) => {
