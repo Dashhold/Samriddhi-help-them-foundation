@@ -6,7 +6,8 @@ A single-service Railway application with a React/Vite frontend, Fastify API, an
 
 - `frontend/` — public site and administrator UI; Vite builds to `frontend/dist`.
 - `backend/` — Fastify API, PostgreSQL migrations, authentication, CMS, assets, and donor reporting.
-- `railway.json` — root Railway build, migration, start, and health configuration.
+- `nixpacks.toml` — deterministic Railway install and build phases.
+- `railway.json` — Railway builder, migration, start, and health configuration.
 
 ## Local commands
 

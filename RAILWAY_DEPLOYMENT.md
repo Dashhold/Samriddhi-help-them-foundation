@@ -8,7 +8,7 @@ Create one Railway project with:
 2. One application service rooted at the repository root.
 3. A public domain on the application service.
 
-The committed `railway.json` runs `npm ci && npm run build`, applies migrations with `npm run migrate`, starts Fastify with `npm start`, and checks `/health`. Fastify serves both `/api/*` and `frontend/dist`, including an HTML5 SPA fallback for routes such as `/admin`.
+The committed deployment configuration uses Nixpacks. `nixpacks.toml` installs dependencies exactly once with `npm ci --include=dev`, then runs `npm run build` in a separate phase. `railway.json` applies migrations with `npm run migrate`, starts Fastify with `npm start`, and checks `/health`. Fastify serves both `/api/*` and `frontend/dist`, including an HTML5 SPA fallback for routes such as `/admin`.
 
 ## 2. Configure server variables
 
@@ -32,14 +32,16 @@ For optional local Vite development against Fastify on another origin, set `VITE
 
 ## 3. Build, migrate, and start
 
-The root scripts are the deployment contract:
+The committed Railway phases and root scripts are the deployment contract:
 
 ```text
-npm ci
+npm ci --include=dev
 npm run build
 npm run migrate
 npm start
 ```
+
+`--include=dev` keeps the frontend Vite/TypeScript and backend TypeScript build tools available even when Railway sets production-oriented npm options. Do not add dashboard install or build command overrides; they can duplicate or replace the committed Nixpacks phases.
 
 A successful deployment must report HTTP 200 from `/health`, `database: "ready"`, `migrations.current: true`, and expected migration `003`. The migration command is transaction-locked and validates complete version/name/checksum history; a removed, renamed, or changed applied migration blocks readiness and deployment.
 
