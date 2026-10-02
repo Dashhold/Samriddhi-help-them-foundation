@@ -4,6 +4,7 @@ import { NewsItem } from "../../cms/types"
 import { Icon } from "../../components/ui"
 import { resolvePublicAsset } from "../../lib/router"
 import AssetUpload from "../components/AssetUpload"
+import { useAdminFeedback } from "../components/AdminFeedback"
 import { createId, slugify } from "../utils"
 
 type Props = { onSaved: (message: string) => void }
@@ -29,6 +30,7 @@ export default function NewsSection({ onSaved }: Props) {
   const { content, update } = useCms()
   const [editing, setEditing] = useState<NewsItem | null>(null)
   const [saving, setSaving] = useState(false)
+  const { confirm, notify } = useAdminFeedback()
   const sorted = [...content.news].sort((a, b) =>
     b.publishedAt.localeCompare(a.publishedAt),
   )
@@ -60,22 +62,25 @@ export default function NewsSection({ onSaved }: Props) {
       setSaving(false)
     }
   }
-  const remove = async (id: string) => {
-    if (
-      !window.confirm(
-        "Delete this news update? This cannot be undone from the dashboard.",
-      )
-    )
-      return
+  const remove = async (item: NewsItem) => {
+    const name = item.title.trim()
+    const approved = await confirm({
+      title: name ? `Delete “${name}”?` : "Delete this news update?",
+      message:
+        "This news update and its cover image will be removed from the website straight away. This cannot be undone.",
+      confirmLabel: "Delete update",
+    })
+    if (!approved) return
     try {
       await update((next) => ({
         ...next,
-        news: next.news.filter((entry) => entry.id !== id),
+        news: next.news.filter((entry) => entry.id !== item.id),
       }))
-      onSaved("News update deleted.")
+      onSaved(`${name ? `“${name}”` : "News update"} deleted.`)
     } catch (error) {
-      alert(
+      notify(
         error instanceof Error ? error.message : "News could not be deleted.",
+        "error",
       )
     }
   }
@@ -126,7 +131,7 @@ export default function NewsSection({ onSaved }: Props) {
                 </button>
                 <button
                   className="admin-icon-button admin-icon-button--danger"
-                  onClick={() => void remove(item.id)}
+                  onClick={() => void remove(item)}
                   aria-label={`Delete ${item.title}`}
                 >
                   <Icon name="trash" size={15} />

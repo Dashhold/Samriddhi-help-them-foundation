@@ -11,6 +11,9 @@ import DonationSection from "./sections/DonationSection"
 import DocumentsSection from "./sections/DocumentsSection"
 import ReportsSection from "./sections/ReportsSection"
 import SettingsSection from "./sections/SettingsSection"
+import AdminFeedbackProvider, {
+  useAdminFeedback,
+} from "./components/AdminFeedback"
 
 type SectionId = "overview" | "home" | "fundraising" | "news" | "donation" | "documents" | "reports" | "settings"
 const sections: {
@@ -70,20 +73,23 @@ const sections: {
 ]
 
 export default function AdminDashboard() {
+  return (
+    <AdminFeedbackProvider>
+      <DashboardWorkspace />
+    </AdminFeedbackProvider>
+  )
+}
+
+function DashboardWorkspace() {
   const auth = useAdminAuth()
   const cms = useCms()
+  const { notify } = useAdminFeedback()
   const [active, setActive] = useState<SectionId>("overview")
   const [menuOpen, setMenuOpen] = useState(false)
-  const [toast, setToast] = useState("")
   const current = sections.find((item) => item.id === active) ?? sections[0]
   useEffect(() => {
     document.title = `${current.label} · Samriddhi Admin`
   }, [current.label])
-  useEffect(() => {
-    if (!toast) return
-    const timer = window.setTimeout(() => setToast(""), 2600)
-    return () => clearTimeout(timer)
-  }, [toast])
   const navigate = (section: string) => {
     setActive(section as SectionId)
     setMenuOpen(false)
@@ -92,19 +98,19 @@ export default function AdminDashboard() {
   const render = () => {
     switch (active) {
       case "fundraising":
-        return <FundRaisingSection onSaved={setToast} />
+        return <FundRaisingSection onSaved={notify} />
       case "home":
-        return <HomeContentSection onSaved={setToast} />
+        return <HomeContentSection onSaved={notify} />
       case "news":
-        return <NewsSection onSaved={setToast} />
+        return <NewsSection onSaved={notify} />
       case "donation":
-        return <DonationSection onSaved={setToast} />
+        return <DonationSection onSaved={notify} />
       case "documents":
-        return <DocumentsSection onSaved={setToast} />
+        return <DocumentsSection onSaved={notify} />
       case "reports":
-        return <ReportsSection onSaved={setToast} />
+        return <ReportsSection onSaved={notify} />
       case "settings":
-        return <SettingsSection onSaved={setToast} />
+        return <SettingsSection onSaved={notify} />
       default:
         return <OverviewSection onNavigate={navigate} />
     }
@@ -188,11 +194,6 @@ export default function AdminDashboard() {
           </div>
         </main>
       </div>
-      {toast && (
-        <div className="admin-toast" role="status">
-          <Icon name="check" size={15} /> {toast}
-        </div>
-      )}
     </div>
   )
 }

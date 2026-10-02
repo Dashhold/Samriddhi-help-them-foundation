@@ -2,6 +2,7 @@ import { ChangeEvent, useState } from "react"
 import { uploadCmsAsset } from "../../cms/storage"
 import { Icon } from "../../components/ui"
 import { resolvePublicAsset } from "../../lib/router"
+import { useAdminFeedback } from "./AdminFeedback"
 
 type Props = {
   label: string
@@ -24,6 +25,18 @@ export default function AssetUpload({
 }: Props) {
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState("")
+  const { confirm, notify } = useAdminFeedback()
+  const kind = document ? "file" : "image"
+  const removeAsset = async () => {
+    const approved = await confirm({
+      title: `Remove this ${kind}?`,
+      message: `“${label}” will be removed from this content. Save your changes afterwards to update the live website.`,
+      confirmLabel: `Remove ${kind}`,
+    })
+    if (!approved) return
+    onChange("")
+    notify(`${label} removed. Save your changes to update the live website.`)
+  }
   const upload = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     event.target.value = ""
@@ -79,7 +92,7 @@ export default function AssetUpload({
         <button
           className="admin-remove-asset"
           type="button"
-          onClick={() => onChange("")}
+          onClick={() => void removeAsset()}
         >
           <Icon name="trash" size={14} />
           Remove from content

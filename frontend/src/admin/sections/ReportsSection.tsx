@@ -5,6 +5,7 @@ import { Icon } from "../../components/ui"
 import { DonationRecord, donationRecordsToCsv } from "../../payments/contracts"
 import { loadDonationRecords } from "../../payments/repository"
 import AssetUpload from "../components/AssetUpload"
+import { useAdminFeedback } from "../components/AdminFeedback"
 import { createId, downloadText } from "../utils"
 
 type Props = { onSaved: (message: string) => void }
@@ -32,6 +33,7 @@ export default function ReportsSection({ onSaved }: Props) {
   const [recordsError, setRecordsError] = useState("")
   const [editing, setEditing] = useState<PublicReport | null>(null)
   const [saving, setSaving] = useState(false)
+  const { confirm, notify } = useAdminFeedback()
   const selectedPeriod = period === "monthly" ? month : year
   useEffect(() => {
     let active = true
@@ -88,17 +90,25 @@ export default function ReportsSection({ onSaved }: Props) {
       setSaving(false)
     }
   }
-  const removeReport = async (id: string) => {
-    if (!confirm("Remove this public report entry?")) return
+  const removeReport = async (report: PublicReport) => {
+    const name = report.title.trim()
+    const approved = await confirm({
+      title: name ? `Remove “${name}”?` : "Remove this report?",
+      message:
+        "This report will be removed from the public Reports page straight away. This cannot be undone.",
+      confirmLabel: "Remove report",
+    })
+    if (!approved) return
     try {
       await update((next) => ({
         ...next,
-        reports: next.reports.filter((item) => item.id !== id),
+        reports: next.reports.filter((item) => item.id !== report.id),
       }))
-      onSaved("Public report removed.")
+      onSaved(`${name ? `“${name}”` : "Public report"} removed.`)
     } catch (error) {
-      alert(
+      notify(
         error instanceof Error ? error.message : "Report could not be removed.",
+        "error",
       )
     }
   }
@@ -360,12 +370,14 @@ export default function ReportsSection({ onSaved }: Props) {
                   <button
                     className="admin-icon-button"
                     onClick={() => setEditing(structuredClone(report))}
+                    aria-label={`Edit ${report.title}`}
                   >
                     <Icon name="edit" size={15} />
                   </button>
                   <button
                     className="admin-icon-button admin-icon-button--danger"
-                    onClick={() => void removeReport(report.id)}
+                    onClick={() => void removeReport(report)}
+                    aria-label={`Remove ${report.title}`}
                   >
                     <Icon name="trash" size={15} />
                   </button>

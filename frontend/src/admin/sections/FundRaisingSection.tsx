@@ -3,6 +3,7 @@ import { useCms } from "../../cms/CmsProvider"
 import { Campaign, FundRaisingContent } from "../../cms/types"
 import { Icon } from "../../components/ui"
 import AssetUpload from "../components/AssetUpload"
+import { useAdminFeedback } from "../components/AdminFeedback"
 import { createId } from "../utils"
 
 type Props = { onSaved: (message: string) => void }
@@ -28,7 +29,27 @@ export default function FundRaisingSection({ onSaved }: Props) {
     structuredClone(content.fundraising),
   )
   const [saving, setSaving] = useState(false)
+  const { confirm } = useAdminFeedback()
   useEffect(() => setDraft(structuredClone(content.fundraising)), [revision])
+  const removeCampaign = async (campaign: Campaign) => {
+    const name = campaign.title.trim()
+    const approved = await confirm({
+      title: name ? `Delete “${name}”?` : "Delete this appeal?",
+      message:
+        "This appeal and its image will be removed from the Fund Raising section. Click Save & publish afterwards to update the live website.",
+      confirmLabel: "Delete appeal",
+    })
+    if (!approved) return
+    setDraft((current) => ({
+      ...current,
+      campaigns: current.campaigns.filter((item) => item.id !== campaign.id),
+    }))
+    onSaved(
+      `${
+        name ? `“${name}”` : "Appeal"
+      } removed. Click Save & publish to update the live website.`,
+    )
+  }
   const changeCampaign = (id: string, patch: Partial<Campaign>) =>
     setDraft((current) => ({
       ...current,
@@ -294,15 +315,7 @@ export default function FundRaisingSection({ onSaved }: Props) {
                   <button
                     className="admin-button admin-button--danger"
                     type="button"
-                    onClick={() => {
-                      if (confirm("Remove this fundraising appeal?"))
-                        setDraft((current) => ({
-                          ...current,
-                          campaigns: current.campaigns.filter(
-                            (item) => item.id !== campaign.id,
-                          ),
-                        }))
-                    }}
+                    onClick={() => void removeCampaign(campaign)}
                   >
                     <Icon name="trash" size={14} />
                     Remove appeal

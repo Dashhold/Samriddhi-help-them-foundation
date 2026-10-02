@@ -2,6 +2,7 @@ import { FormEvent, useEffect, useRef, useState } from "react"
 import { useCms } from "../../cms/CmsProvider"
 import { ContactSettings } from "../../cms/types"
 import { Icon } from "../../components/ui"
+import { useAdminFeedback } from "../components/AdminFeedback"
 import { downloadText } from "../utils"
 
 type Props = { onSaved: (message: string) => void }
@@ -13,6 +14,7 @@ export default function SettingsSection({ onSaved }: Props) {
     structuredClone(content.contact),
   )
   const [saving, setSaving] = useState(false)
+  const { confirm, notify } = useAdminFeedback()
   const inputRef = useRef<HTMLInputElement>(null)
   useEffect(() => setContact(structuredClone(content.contact)), [revision])
   const save = async (event: FormEvent) => {
@@ -32,27 +34,36 @@ export default function SettingsSection({ onSaved }: Props) {
     }
   }
   const importFile = async (file: File | undefined) => {
+    // Clear the picker now so choosing the same file again still triggers a change.
+    if (inputRef.current) inputRef.current.value = ""
     if (!file) return
+    const approved = await confirm({
+      title: "Replace all content with this backup?",
+      message: `Importing “${file.name}” replaces all current website content. Export a backup first if you may need the current content.`,
+      confirmLabel: "Import backup",
+      icon: "upload",
+    })
+    if (!approved) return
     try {
       await importSnapshot(await file.text())
-      onSaved("CMS backup imported to PostgreSQL.")
+      onSaved("Backup imported. The website now shows the imported content.")
     } catch (error) {
-      alert(error instanceof Error ? error.message : "Import failed.")
+      notify(error instanceof Error ? error.message : "Import failed.", "error")
     }
-    if (inputRef.current) inputRef.current.value = ""
   }
   const resetRemote = async () => {
-    if (
-      !confirm(
-        "Replace published remote content with bundled defaults? Export a backup first. This creates a database revision.",
-      )
-    )
-      return
+    const approved = await confirm({
+      title: "Reset all website content?",
+      message:
+        "All published content will be replaced with the original default content. Export a JSON backup first if you may need the current content.",
+      confirmLabel: "Reset content",
+    })
+    if (!approved) return
     try {
       await reset()
-      onSaved("Remote CMS reset to bundled defaults.")
+      onSaved("Website content reset to the original defaults.")
     } catch (error) {
-      alert(error instanceof Error ? error.message : "Reset failed.")
+      notify(error instanceof Error ? error.message : "Reset failed.", "error")
     }
   }
   return (

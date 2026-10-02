@@ -4,6 +4,7 @@ import { DocumentItem } from "../../cms/types"
 import { Icon } from "../../components/ui"
 import { resolvePublicAsset } from "../../lib/router"
 import AssetUpload from "../components/AssetUpload"
+import { useAdminFeedback } from "../components/AdminFeedback"
 import { createId } from "../utils"
 
 type Props = { onSaved: (message: string) => void }
@@ -29,6 +30,7 @@ export default function DocumentsSection({ onSaved }: Props) {
   const { content, update } = useCms()
   const [editing, setEditing] = useState<DocumentItem | null>(null)
   const [saving, setSaving] = useState(false)
+  const { confirm, notify } = useAdminFeedback()
   const commit = async (event: FormEvent) => {
     event.preventDefault()
     if (!editing) return
@@ -74,24 +76,27 @@ export default function DocumentsSection({ onSaved }: Props) {
       )
     }
   }
-  const remove = async (id: string) => {
-    if (
-      !window.confirm(
-        "Remove this document from the CMS? Its Storage object is retained for audit and can be cleaned up separately.",
-      )
-    )
-      return
+  const remove = async (record: DocumentItem) => {
+    const name = record.title.trim()
+    const approved = await confirm({
+      title: name ? `Remove “${name}”?` : "Remove this document?",
+      message:
+        "This document will be removed from the website's document centre straight away. This cannot be undone.",
+      confirmLabel: "Remove document",
+    })
+    if (!approved) return
     try {
       await update((next) => ({
         ...next,
-        documents: next.documents.filter((item) => item.id !== id),
+        documents: next.documents.filter((item) => item.id !== record.id),
       }))
-      onSaved("Document record removed.")
+      onSaved(`${name ? `“${name}”` : "Document"} removed.`)
     } catch (error) {
-      alert(
+      notify(
         error instanceof Error
           ? error.message
           : "Document could not be removed.",
+        "error",
       )
     }
   }
@@ -169,7 +174,7 @@ export default function DocumentsSection({ onSaved }: Props) {
                 </button>
                 <button
                   className="admin-icon-button admin-icon-button--danger"
-                  onClick={() => void remove(item.id)}
+                  onClick={() => void remove(item)}
                   aria-label={`Remove ${item.title}`}
                 >
                   <Icon name="trash" size={15} />

@@ -3,7 +3,7 @@ import logo from "../imports/samriddhi-logo.png"
 import { PageBanner } from "../cms/types"
 import { AppLink, resolvePublicAsset } from "../lib/router"
 
-export type IconName = "arrow" | "building" | "calendar" | "chart" | "check" | "chevron" | "clock" | "close" | "copy" | "document" | "download" | "edit" | "external" | "heart" | "home" | "hands" | "mail" | "menu" | "news" | "phone" | "pin" | "plus" | "qr" | "reports" | "settings" | "shield" | "trash" | "upload" | "users" | "wallet" | "whatsapp"
+export type IconName = "arrow" | "building" | "calendar" | "chart" | "check" | "chevron" | "clock" | "close" | "copy" | "document" | "download" | "edit" | "external" | "heart" | "home" | "hands" | "mail" | "menu" | "news" | "phone" | "pin" | "plus" | "qr" | "reports" | "settings" | "shield" | "trash" | "upload" | "users" | "wallet" | "warning" | "whatsapp"
 
 interface IconProps {
   name: IconName
@@ -167,6 +167,12 @@ export function Icon({ name, size = 20 }: IconProps) {
       <>
         <path d="M4 6h16v14H4a2 2 0 0 1-2-2V6a3 3 0 0 1 3-3h13v3" />
         <path d="M15 11h7v5h-7a2.5 2.5 0 0 1 0-5Z" />
+      </>
+    ),
+    warning: (
+      <>
+        <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+        <path d="M12 9v4M12 17h.01" />
       </>
     ),
     whatsapp: (
