@@ -2,6 +2,21 @@ import type { AppConfig } from "../config.js";
 import type { Database } from "../db.js";
 import { hashPassword, verifyPassword } from "./password.js";
 
+// Argon2id hash of the default administrator password that was shared privately with the site owner.
+// Only the hash lives in the repository. Setting ADMIN_PASSWORD on Railway replaces it.
+export const DEFAULT_ADMIN_PASSWORD_HASH =
+  "$argon2id$v=19$m=19456,t=2,p=1$OS1igJXFA9fLWwnYnw/F4g$Rrur0X8vgsoP7hnhqVPrsIw1zjHZ9WY2AuNAHIjNgP0";
+
+function desiredPasswordHash(config: AppConfig) {
+  return config.adminPassword === null ? Promise.resolve(DEFAULT_ADMIN_PASSWORD_HASH) : hashPassword(config.adminPassword);
+}
+
+function passwordIsCurrent(storedHash: string, config: AppConfig) {
+  return config.adminPassword === null
+    ? Promise.resolve(storedHash === DEFAULT_ADMIN_PASSWORD_HASH)
+    : verifyPassword(storedHash, config.adminPassword);
+}
+
 export function normalizeUsername(username: string) {
   return username.normalize("NFKC").trim().toLowerCase();
 }
@@ -29,7 +44,7 @@ export async function bootstrapAdmin(sql: Database, config: AppConfig) {
     `;
     const existing = rows[0];
     if (!existing) {
-      const passwordHash = await hashPassword(config.adminPassword);
+      const passwordHash = await desiredPasswordHash(config);
       const inserted = await transaction<{ id: string }[]>`
         INSERT INTO admins (username, username_normalized, password_hash, active, environment_managed)
         VALUES (${username}, ${normalized}, ${passwordHash}, true, true)
@@ -38,10 +53,10 @@ export async function bootstrapAdmin(sql: Database, config: AppConfig) {
       return inserted[0]?.id;
     }
 
-    const passwordMatches = await verifyPassword(existing.password_hash, config.adminPassword);
+    const passwordMatches = await passwordIsCurrent(existing.password_hash, config);
     const credentialsChanged = existing.username_normalized !== normalized || !passwordMatches;
     if (credentialsChanged) {
-      const passwordHash = await hashPassword(config.adminPassword);
+      const passwordHash = await desiredPasswordHash(config);
       await transaction`
         UPDATE admins
         SET username = ${username}, username_normalized = ${normalized}, password_hash = ${passwordHash},

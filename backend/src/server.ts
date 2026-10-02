@@ -45,6 +45,9 @@ async function start() {
   try {
     await sql`SELECT 1`;
     await bootstrapAdmin(sql, config);
+    app.log.info(
+      `Admin login ready for "${config.adminUsername}" (${config.adminPassword === null ? "default password" : "ADMIN_PASSWORD"}).`,
+    );
     await sql`
       UPDATE admin_sessions SET revoked_at = COALESCE(revoked_at, now())
       WHERE expires_at <= now() AND revoked_at IS NULL

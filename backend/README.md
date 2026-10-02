@@ -18,12 +18,12 @@ npm start
 
 ## Server variables
 
-- `DATABASE_URL`: Railway PostgreSQL connection string; prefer the private project reference.
-- `DATABASE_SSL`: `disable` for Railway private networking, or `require` for an endpoint requiring TLS.
+- `DATABASE_URL` (the only required variable): Railway PostgreSQL connection string, for example `${{Postgres.DATABASE_URL}}`. `DATABASE_PRIVATE_URL`, `DATABASE_PUBLIC_URL`, `POSTGRES_URL`, and the `PG*` variables also work.
+- `DATABASE_SSL`: optional. Use `require` only for an endpoint that needs TLS.
 - `PUBLIC_API_URL`: optional public origin of this backend, used for uploaded-asset links. Defaults to `https://$RAILWAY_PUBLIC_DOMAIN`.
 - `FRONTEND_ORIGINS`: optional comma-separated frontend URLs allowed by CORS, for example `https://your-frontend.up.railway.app`. When empty, any origin is allowed.
-- `ADMIN_USERNAME`: private environment-managed administrator username.
-- `ADMIN_PASSWORD`: private random password of 12–512 characters.
+- `ADMIN_USERNAME`: optional; defaults to `jagbir-samriddhi`.
+- `ADMIN_PASSWORD`: optional. When unset, the built-in default password applies; only its Argon2id hash is in the repository. Setting it (12–512 characters) replaces the default on the next start.
 - `SESSION_TTL_HOURS`: optional; defaults to 8 and is capped at 168.
 - `REQUEST_BODY_LIMIT_BYTES`: optional; defaults to 11 MiB and must support the 10 MiB upload limit.
 - `PORT`, `HOST`, `NODE_ENV`: Railway supplies `PORT`; bind `HOST` to `0.0.0.0`.

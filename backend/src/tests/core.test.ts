@@ -1,11 +1,11 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
-import { bootstrapAdmin } from "../auth/bootstrap.js";
+import { bootstrapAdmin, DEFAULT_ADMIN_PASSWORD_HASH } from "../auth/bootstrap.js";
 import { hashPassword, verifyPassword } from "../auth/password.js";
 import { createOpaqueToken, hashSessionToken, SESSION_TOKEN_BYTES } from "../auth/sessions.js";
 import { hasValidSignature, safeAssetFilename } from "../assets/repository.js";
-import { loadAppConfig, type AppConfig } from "../config.js";
+import { DEFAULT_ADMIN_USERNAME, loadAppConfig, type AppConfig } from "../config.js";
 import { siteContentSchema } from "../content/site-content-schema.js";
 import type { Database } from "../db.js";
 import { donationDateRange } from "../donations/repository.js";
@@ -100,6 +100,25 @@ test("runtime configuration normalizes origins and applies Railway defaults", ()
   assert.throws(() => loadAppConfig({ ...environment, PUBLIC_API_URL: "https://api.example.org/base" }));
   assert.throws(() => loadAppConfig({ ...environment, PUBLIC_API_URL: "http://api.example.org" }));
   assert.throws(() => loadAppConfig({ ...environment, ADMIN_PASSWORD: "too-short" }));
+
+  const defaults = loadAppConfig({ ...environment, ADMIN_USERNAME: undefined, ADMIN_PASSWORD: undefined });
+  assert.equal(defaults.adminUsername, DEFAULT_ADMIN_USERNAME);
+  assert.equal(defaults.adminPassword, null);
+  assert.equal(loadAppConfig({ ...environment, ADMIN_PASSWORD: "  " }).adminPassword, null);
+
+  const databaseOnly = { NODE_ENV: "production" };
+  assert.throws(() => loadAppConfig(databaseOnly), /DATABASE_URL is not set/);
+  assert.equal(
+    loadAppConfig({ ...databaseOnly, DATABASE_PUBLIC_URL: "postgresql://u:p@proxy.example:5432/railway" }).databaseUrl,
+    "postgresql://u:p@proxy.example:5432/railway",
+  );
+  assert.equal(
+    loadAppConfig({ ...databaseOnly, PGHOST: "db.internal", PGUSER: "postgres", PGPASSWORD: "p@ss", PGDATABASE: "railway" })
+      .databaseUrl,
+    "postgresql://postgres:p%40ss@db.internal:5432/railway",
+  );
+  assert.equal(loadAppConfig({ ...environment, DATABASE_SSL: "require" }).databaseSsl, "require");
+  assert.equal(loadAppConfig({ ...environment, DATABASE_SSL: "bogus" }).databaseSsl, false);
 });
 
 test("passwords use Argon2id and opaque session tokens are stored only as hashes", async () => {
@@ -135,6 +154,22 @@ test("administrator bootstrap hashes rotations and revokes prior sessions", asyn
   assert.ok(credentialUpdate);
   assert.equal(await verifyPassword(String(credentialUpdate.values[2]), "the-new-test-password"), true);
   assert.ok(statements.some((statement) => statement.query.includes("UPDATE admin_sessions")));
+});
+
+test("administrator bootstrap falls back to the built-in default password hash", async () => {
+  const statements: Array<{ query: string; values: unknown[] }> = [];
+  const sql = fakeDatabase(async (query, values) => {
+    statements.push({ query, values });
+    if (query.includes("INSERT INTO admins")) return [{ id: "22222222-2222-4222-8222-222222222222" }];
+    return [];
+  });
+
+  await bootstrapAdmin(sql, testConfig({ adminUsername: DEFAULT_ADMIN_USERNAME, adminPassword: null }));
+  const insert = statements.find((statement) => statement.query.includes("INSERT INTO admins"));
+  assert.ok(insert);
+  assert.equal(insert.values[0], DEFAULT_ADMIN_USERNAME);
+  assert.equal(insert.values[2], DEFAULT_ADMIN_PASSWORD_HASH);
+  assert.match(DEFAULT_ADMIN_PASSWORD_HASH, /^\$argon2id\$/);
 });
 
 test("donation report periods reject malformed and out-of-range dates", () => {
