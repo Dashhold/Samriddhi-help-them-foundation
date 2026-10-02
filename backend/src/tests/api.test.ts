@@ -14,16 +14,65 @@ const ADMIN_ID = "11111111-1111-4111-8111-111111111111";
 const SESSION_ID = "22222222-2222-4222-8222-222222222222";
 const ASSET_ID = "33333333-3333-4333-8333-333333333333";
 const DONATION_ID = "44444444-4444-4444-8444-444444444444";
+const MEMBER_ID = "55555555-5555-4555-8555-555555555555";
+const RECEIPT_ID = "66666666-6666-4666-8666-666666666666";
 const TOKEN = "A".repeat(43);
+
+type FakeMember = {
+  id: string;
+  member_type: "individual" | "organization";
+  status: "pending" | "approved" | "rejected";
+  full_name: string;
+  organization_name: string | null;
+  email: string;
+  phone: string;
+  city: string;
+  state: string;
+  details: Record<string, string>;
+  photo_asset_id: string | null;
+  photo_filename: string | null;
+  member_code: string | null;
+  designation: string;
+  show_on_team: boolean;
+  approved_at: Date | null;
+  valid_until: string | null;
+  admin_note: string;
+  created_at: Date;
+};
 
 type FakeOptions = {
   appliedMigrationMissingFromSource?: boolean;
   authorized?: boolean;
   loginPasswordHash?: string;
   latestMigration?: string | null;
+  members?: FakeMember[];
   migrationNameMismatch?: boolean;
   revision?: number;
 };
+
+function pendingMember(): FakeMember {
+  return {
+    id: MEMBER_ID,
+    member_type: "individual",
+    status: "pending",
+    full_name: "Asha Verma",
+    organization_name: null,
+    email: "asha@example.org",
+    phone: "+91 98765 43210",
+    city: "Hisar",
+    state: "Haryana",
+    details: { address: "12 Model Town", joinAs: "volunteer" },
+    photo_asset_id: ASSET_ID,
+    photo_filename: "photo.png",
+    member_code: null,
+    designation: "Volunteer",
+    show_on_team: true,
+    approved_at: null,
+    valid_until: null,
+    admin_note: "",
+    created_at: new Date("2026-09-01T10:00:00.000Z"),
+  };
+}
 
 type QueryRecord = { query: string; values: unknown[] };
 
@@ -60,6 +109,7 @@ async function defaultContent() {
 
 function fakeDatabase(initialContent: SiteContent, options: FakeOptions = {}) {
   const queries: QueryRecord[] = [];
+  const members: FakeMember[] = structuredClone(options.members ?? []);
   const loginAttemptCounts = new Map<string, number>();
   let content = structuredClone(initialContent);
   let revision = options.revision ?? 3;
@@ -77,6 +127,80 @@ function fakeDatabase(initialContent: SiteContent, options: FakeOptions = {}) {
     const query = rawQuery.replace(/\s+/g, " ").trim();
     queries.push({ query, values });
     if (query.includes("SELECT 1 AS ready")) return [{ ready: 1 }];
+    if (query.includes("nextval('member_number_seq')")) return [{ value: "1" }];
+    if (query.includes("nextval('donation_receipt_seq')")) return [{ value: "7" }];
+    if (query.includes("INSERT INTO members")) {
+      members.push({
+        ...pendingMember(),
+        member_type: values[0] as FakeMember["member_type"],
+        full_name: String(values[1]),
+        organization_name: values[2] as string | null,
+        email: String(values[3]),
+        phone: String(values[4]),
+        city: String(values[5]),
+        state: String(values[6]),
+        details: values[7] as Record<string, string>,
+        photo_asset_id: values[8] as string,
+        designation: String(values[9]),
+      });
+      return [{ id: MEMBER_ID }];
+    }
+    if (query.startsWith("UPDATE members")) {
+      const member = members.find((item) => item.id === values[7]);
+      if (member) {
+        Object.assign(member, {
+          status: values[0],
+          designation: values[1],
+          show_on_team: values[2],
+          admin_note: values[3],
+          valid_until: values[4],
+          member_code: values[5],
+          approved_at: values[6],
+        });
+      }
+      return [];
+    }
+    if (query.startsWith("DELETE FROM members")) {
+      const index = members.findIndex((item) => item.id === values[0]);
+      if (index < 0) return [];
+      const [removed] = members.splice(index, 1);
+      return [{ id: removed!.id, photo_asset_id: removed!.photo_asset_id }];
+    }
+    if (query.includes("FROM members m")) {
+      let rows = members;
+      if (query.includes("m.status = 'approved'")) rows = rows.filter((item) => item.status === "approved");
+      if (query.includes("m.show_on_team = true")) rows = rows.filter((item) => item.show_on_team);
+      if (query.includes("m.member_code =")) rows = rows.filter((item) => item.member_code === values[0]);
+      if (query.includes("m.id =")) rows = rows.filter((item) => item.id === values[0]);
+      if (query.includes("= 'all' OR m.status =") && values[0] !== "all") {
+        rows = rows.filter((item) => item.status === values[0]);
+      }
+      return rows.map((item) => ({ ...item }));
+    }
+    if (query.startsWith("INSERT INTO donations")) {
+      return [{
+        id: RECEIPT_ID,
+        provider: "offline",
+        receipt_number: values[8],
+        donor_type: values[1],
+        donor_name: values[2],
+        company_name: values[3],
+        email: values[4],
+        phone: values[5],
+        donor_pan: values[10],
+        donor_address: values[11],
+        amount_minor: values[6],
+        currency: "INR",
+        purpose: values[7],
+        payment_mode: values[12],
+        payment_reference: values[13],
+        provider_payment_id: null,
+        notes: values[14],
+        paid_at: values[9],
+        receipt_issued_at: new Date("2026-10-02T09:00:00.000Z"),
+        created_at: new Date("2026-10-02T09:00:00.000Z"),
+      }];
+    }
     if (query.includes("FROM schema_migrations ORDER BY version")) {
       const migrations = await discoverMigrations();
       const selected = options.latestMigration === null
@@ -181,8 +305,28 @@ function fakeDatabase(initialContent: SiteContent, options: FakeOptions = {}) {
     json: (value: unknown) => value,
     unsafe: async (statement: string) => execute(statement, []),
   });
-  return { sql, queries };
+  return { sql, queries, members };
 }
+
+function joinMultipart(data: unknown, filename: string, mimeType: string, bytes: Buffer) {
+  const boundary = "----samriddhi-join-test-boundary";
+  const field = Buffer.from(
+    `--${boundary}\r\nContent-Disposition: form-data; name="data"\r\n\r\n${JSON.stringify(data)}\r\n`,
+  );
+  const filePrefix = Buffer.from(
+    `--${boundary}\r\nContent-Disposition: form-data; name="photo"; filename="${filename}"\r\nContent-Type: ${mimeType}\r\n\r\n`,
+  );
+  const suffix = Buffer.from(`\r\n--${boundary}--\r\n`);
+  return {
+    payload: Buffer.concat([field, filePrefix, bytes, suffix]),
+    headers: { "content-type": `multipart/form-data; boundary=${boundary}` },
+  };
+}
+
+const PNG_BYTES = Buffer.concat([
+  Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]),
+  Buffer.from("test-image-body"),
+]);
 
 function multipart(filename: string, mimeType: string, bytes: Buffer) {
   const boundary = "----samriddhi-focused-test-boundary";
@@ -315,7 +459,7 @@ test("public content hides private records while authenticated editors receive t
   const health = await app.inject({ method: "GET", url: "/health" });
   assert.equal(health.statusCode, 200);
   assert.equal(health.json().migrations.current, true);
-  assert.equal(health.json().migrations.expected, "003");
+  assert.equal(health.json().migrations.expected, "004");
 
   assert.equal(publicContent.headers["access-control-allow-origin"], undefined);
 
@@ -334,7 +478,7 @@ test("public content hides private records while authenticated editors receive t
   const allowedMethods = String(allowed.headers["access-control-allow-methods"])
     .split(",")
     .map((method) => method.trim());
-  assert.deepEqual(allowedMethods, ["GET", "PUT", "POST", "OPTIONS"]);
+  assert.deepEqual(allowedMethods, ["GET", "PUT", "POST", "DELETE", "OPTIONS"]);
   const allowedHeaders = String(allowed.headers["access-control-allow-headers"])
     .toLowerCase()
     .split(",")
@@ -616,6 +760,20 @@ test("all protected CMS, upload, and financial routes reject missing or revoked 
     401,
     "AUTH_REQUIRED",
   );
+  for (const [method, url] of [
+    ["GET", "/api/admin/members"],
+    ["PUT", `/api/admin/members/${MEMBER_ID}`],
+    ["DELETE", `/api/admin/members/${MEMBER_ID}`],
+    ["GET", "/api/admin/receipts"],
+    ["POST", "/api/admin/receipts"],
+    ["DELETE", `/api/admin/receipts/${RECEIPT_ID}`],
+  ] as const) {
+    assertError(
+      await app.inject({ method, url, headers: { authorization: `Bearer ${TOKEN}` }, payload: {} }),
+      401,
+      "AUTH_REQUIRED",
+    );
+  }
   const sessionLookup = database.queries.find((record) => record.query.includes("FROM admin_sessions s"));
   assert.ok(sessionLookup?.query.includes("s.revoked_at IS NULL"));
   assert.ok(sessionLookup?.query.includes("s.expires_at > now()"));
@@ -712,5 +870,214 @@ test("donation reports are non-cacheable, validated, paid-only, and capped", asy
   assert.equal(response.json().records[0].amount, 123.45);
   const reportQuery = database.queries.find((record) => record.query.includes("FROM donations"));
   assert.ok(reportQuery?.query.includes("LIMIT 5000"));
+  await app.close();
+});
+
+test("join applications store the photo and stay off the public team until approved", async () => {
+  const content = await defaultContent();
+  const database = fakeDatabase(content);
+  const app = await buildApp({ sql: database.sql, config: config() });
+  const application = {
+    memberType: "individual",
+    fullName: "Asha Verma",
+    email: "Asha@Example.org",
+    phone: "+91 98765 43210",
+    address: "12 Model Town",
+    city: "Hisar",
+    state: "Haryana",
+    joinAs: "volunteer",
+    consent: true,
+  };
+
+  const submitted = await app.inject({
+    method: "POST",
+    url: "/api/join",
+    ...joinMultipart(application, "asha.png", "image/png", PNG_BYTES),
+  });
+  assert.equal(submitted.statusCode, 201);
+  assert.equal(submitted.json().status, "pending");
+  assert.equal(submitted.json().reference, MEMBER_ID.slice(0, 8).toUpperCase());
+  const stored = database.members[0];
+  assert.ok(stored);
+  assert.equal(stored.status, "pending");
+  assert.equal(stored.email, "asha@example.org");
+  assert.equal(stored.designation, "Volunteer");
+  assert.equal(stored.photo_asset_id, ASSET_ID);
+  assert.deepEqual(stored.details, {
+    dateOfBirth: "",
+    gender: "",
+    occupation: "",
+    address: "12 Model Town",
+    pincode: "",
+    joinAs: "volunteer",
+    availability: "",
+    skills: "",
+    motivation: "",
+  });
+  const photoInsert = database.queries.find((record) => record.query.includes("INSERT INTO cms_assets"));
+  assert.equal(photoInsert?.values[6], null);
+
+  const team = await app.inject({ method: "GET", url: "/api/team" });
+  assert.equal(team.statusCode, 200);
+  assert.deepEqual(team.json().members, []);
+
+  assertError(
+    await app.inject({
+      method: "POST",
+      url: "/api/join",
+      ...joinMultipart({ ...application, consent: false }, "asha.png", "image/png", PNG_BYTES),
+    }),
+    400,
+    "BAD_REQUEST",
+  );
+  assertError(
+    await app.inject({
+      method: "POST",
+      url: "/api/join",
+      ...joinMultipart(application, "notes.txt", "text/plain", Buffer.from("plain text")),
+    }),
+    400,
+    "BAD_REQUEST",
+  );
+  const organization = await app.inject({
+    method: "POST",
+    url: "/api/join",
+    ...joinMultipart({
+      memberType: "organization",
+      organizationName: "Haryana Steel Works",
+      organizationType: "private-limited",
+      contactName: "Rohit Jain",
+      contactDesignation: "CSR Head",
+      email: "csr@example.org",
+      phone: "+91 90000 00000",
+      address: "Industrial Area, Phase 2",
+      city: "Hisar",
+      state: "Haryana",
+      collaboration: "csr",
+      pan: "abcde1234f",
+      consent: true,
+    }, "logo.png", "image/png", PNG_BYTES),
+  });
+  assert.equal(organization.statusCode, 201);
+  const company = database.members[1];
+  assert.equal(company?.member_type, "organization");
+  assert.equal(company?.full_name, "Rohit Jain");
+  assert.equal(company?.organization_name, "Haryana Steel Works");
+  assert.equal(company?.designation, "CSR partner");
+  assert.equal(company?.details.pan, "ABCDE1234F");
+  await app.close();
+});
+
+test("approval issues a member ID card whose public view hides contact details", async () => {
+  const content = await defaultContent();
+  const database = fakeDatabase(content, { members: [pendingMember()] });
+  const app = await buildApp({ sql: database.sql, config: config() });
+  const headers = { authorization: `Bearer ${TOKEN}` };
+
+  const pending = await app.inject({ method: "GET", url: "/api/admin/members?status=pending", headers });
+  assert.equal(pending.statusCode, 200);
+  assert.equal(pending.headers["cache-control"], "no-store");
+  assert.equal(pending.json().members[0].email, "asha@example.org");
+  assert.equal(pending.json().members[0].photoUrl, `https://api.example.org/api/assets/${ASSET_ID}/photo.png`);
+
+  const approved = await app.inject({
+    method: "PUT",
+    url: `/api/admin/members/${MEMBER_ID}`,
+    headers,
+    payload: { status: "approved", designation: "Field volunteer" },
+  });
+  assert.equal(approved.statusCode, 200);
+  const member = approved.json().member;
+  assert.equal(member.status, "approved");
+  assert.equal(member.memberCode, "SHTF-M-0001");
+  assert.equal(member.designation, "Field volunteer");
+  assert.match(member.validUntil, /^\d{4}-\d{2}-\d{2}$/);
+  assert.ok(member.approvedAt);
+  assert.ok(database.queries.some((record) => record.values.includes("member.approved")));
+
+  const card = await app.inject({ method: "GET", url: "/api/team/shtf-m-0001" });
+  assert.equal(card.statusCode, 200);
+  assert.equal(card.json().member.name, "Asha Verma");
+  assert.equal(card.json().member.designation, "Field volunteer");
+  for (const privateValue of ["asha@example.org", "98765", "12 Model Town"]) {
+    assert.equal(card.body.includes(privateValue), false, `public ID card leaked ${privateValue}`);
+  }
+  const team = await app.inject({ method: "GET", url: "/api/team" });
+  assert.equal(team.json().members.length, 1);
+  assertError(await app.inject({ method: "GET", url: "/api/team/SHTF-M-9999" }), 404, "NOT_FOUND");
+  assertError(await app.inject({ method: "GET", url: "/api/team/not-a-code" }), 404, "NOT_FOUND");
+
+  const rejected = await app.inject({
+    method: "PUT",
+    url: `/api/admin/members/${MEMBER_ID}`,
+    headers,
+    payload: { status: "rejected" },
+  });
+  assert.equal(rejected.json().member.memberCode, "SHTF-M-0001");
+  assertError(await app.inject({ method: "GET", url: "/api/team/SHTF-M-0001" }), 404, "NOT_FOUND");
+
+  const removed = await app.inject({ method: "DELETE", url: `/api/admin/members/${MEMBER_ID}`, headers });
+  assert.equal(removed.statusCode, 204);
+  assert.equal(database.members.length, 0);
+  assert.ok(database.queries.some((record) => record.query.includes("DELETE FROM cms_assets")));
+  await app.close();
+});
+
+test("receipts are numbered by financial year and list issued donations", async () => {
+  const content = await defaultContent();
+  const database = fakeDatabase(content);
+  const app = await buildApp({ sql: database.sql, config: config() });
+  const headers = { authorization: `Bearer ${TOKEN}` };
+  const receipt = {
+    donorType: "individual",
+    donorName: "Ravi Kumar",
+    pan: "abcde1234f",
+    amount: 5000,
+    paymentDate: "2026-04-01",
+    paymentMode: "UPI",
+    paymentReference: "UTR123456",
+    purpose: "General donation",
+  };
+
+  const issued = await app.inject({ method: "POST", url: "/api/admin/receipts", headers, payload: receipt });
+  assert.equal(issued.statusCode, 201);
+  assert.equal(issued.json().receipt.receiptNumber, "SHTF/2026-27/0007");
+  assert.equal(issued.json().receipt.pan, "ABCDE1234F");
+  assert.equal(issued.json().receipt.amount, 5000);
+  assert.equal(issued.json().receipt.paymentDate, "2026-04-01");
+  assert.equal(issued.json().receipt.source, "offline");
+  const insert = database.queries.find((record) => record.query.startsWith("INSERT INTO donations"));
+  assert.ok(insert?.query.includes("'offline'"));
+  assert.ok(insert?.query.includes("'paid'"));
+  assert.equal(insert?.values[6], 500000);
+
+  const march = await app.inject({
+    method: "POST",
+    url: "/api/admin/receipts",
+    headers,
+    payload: { ...receipt, paymentDate: "2026-03-31" },
+  });
+  assert.equal(march.json().receipt.receiptNumber, "SHTF/2025-26/0007");
+
+  for (const invalid of [
+    { ...receipt, pan: "BAD" },
+    { ...receipt, paymentDate: "2999-01-01" },
+    { ...receipt, paymentDate: "2026-02-30" },
+    { ...receipt, amount: 0 },
+    { ...receipt, donorType: "company", companyName: "" },
+  ]) {
+    assertError(await app.inject({ method: "POST", url: "/api/admin/receipts", headers, payload: invalid }), 400, "BAD_REQUEST");
+  }
+
+  const list = await app.inject({ method: "GET", url: "/api/admin/receipts", headers });
+  assert.equal(list.statusCode, 200);
+  assert.equal(list.headers["cache-control"], "no-store");
+  assert.equal(list.json().receipts[0].receiptNumber, "R-1");
+  assert.equal(list.json().receipts[0].source, "online");
+
+  const removed = await app.inject({ method: "DELETE", url: `/api/admin/receipts/${RECEIPT_ID}`, headers });
+  assert.equal(removed.statusCode, 204);
+  const deleteQuery = database.queries.find((record) => record.query.startsWith("DELETE FROM donations"));
+  assert.ok(deleteQuery?.query.includes("provider = 'offline'"));
   await app.close();
 });

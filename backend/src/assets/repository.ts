@@ -47,7 +47,8 @@ type AssetRow = {
 
 export async function insertAsset(
   sql: Database,
-  input: { originalFilename: string; mimeType: string; bytes: Buffer; adminId: string },
+  // adminId is null for public uploads, such as photos sent with a join-us application.
+  input: { originalFilename: string; mimeType: string; bytes: Buffer; adminId: string | null },
 ) {
   if (!ALLOWED_ASSET_TYPES.has(input.mimeType)) {
     throw new AppError(400, "BAD_REQUEST", "Choose a PNG, JPEG, WebP, GIF or PDF file.");

@@ -11,6 +11,8 @@ import authRoutes from "./routes/auth.js";
 import contentRoutes from "./routes/content.js";
 import assetRoutes from "./routes/assets.js";
 import donationRoutes from "./routes/donations.js";
+import memberRoutes from "./routes/members.js";
+import receiptRoutes from "./routes/receipts.js";
 
 export type BuildAppOptions = {
   sql: Database;
@@ -39,7 +41,7 @@ export async function buildApp({
       callback(null, !origin || allowedOrigins.size === 0 || allowedOrigins.has(origin));
     },
     credentials: false,
-    methods: ["GET", "PUT", "POST", "OPTIONS"],
+    methods: ["GET", "PUT", "POST", "DELETE", "OPTIONS"],
     allowedHeaders: ["Authorization", "Content-Type", "If-None-Match"],
     exposedHeaders: ["ETag"],
     maxAge: 86400,
@@ -66,6 +68,8 @@ export async function buildApp({
   await app.register(contentRoutes, { sql, requireAdmin });
   await app.register(assetRoutes, { sql, config, requireAdmin });
   await app.register(donationRoutes, { sql, requireAdmin });
+  await app.register(memberRoutes, { sql, config, requireAdmin });
+  await app.register(receiptRoutes, { sql, requireAdmin });
 
   return app;
 }

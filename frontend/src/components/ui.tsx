@@ -3,7 +3,7 @@ import logo from "../imports/samriddhi-logo.png"
 import { PageBanner } from "../cms/types"
 import { AppLink, resolvePublicAsset } from "../lib/router"
 
-export type IconName = "arrow" | "building" | "calendar" | "chart" | "check" | "chevron" | "clock" | "close" | "copy" | "document" | "download" | "edit" | "external" | "heart" | "home" | "hands" | "mail" | "menu" | "news" | "phone" | "pin" | "plus" | "qr" | "reports" | "settings" | "shield" | "trash" | "upload" | "users" | "wallet" | "warning" | "whatsapp"
+export type IconName = "arrow" | "building" | "calendar" | "chart" | "check" | "chevron" | "clock" | "close" | "copy" | "document" | "download" | "edit" | "external" | "heart" | "home" | "hands" | "mail" | "menu" | "news" | "phone" | "pin" | "plus" | "qr" | "reports" | "settings" | "shield" | "receipt" | "trash" | "upload" | "users" | "wallet" | "warning" | "whatsapp"
 
 interface IconProps {
   name: IconName
@@ -142,6 +142,12 @@ export function Icon({ name, size = 20 }: IconProps) {
       <>
         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" />
         <path d="m9 12 2 2 4-4" />
+      </>
+    ),
+    receipt: (
+      <>
+        <path d="M5 3h14v18l-2.5-1.5L14 21l-2-1.5-2 1.5-2.5-1.5L5 21Z" />
+        <path d="M9 8h6M9 12h6M9 16h3" />
       </>
     ),
     trash: (

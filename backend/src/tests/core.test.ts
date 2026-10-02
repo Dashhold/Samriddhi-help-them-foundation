@@ -9,6 +9,8 @@ import { DEFAULT_ADMIN_USERNAME, loadAppConfig, type AppConfig } from "../config
 import { siteContentSchema } from "../content/site-content-schema.js";
 import type { Database } from "../db.js";
 import { donationDateRange } from "../donations/repository.js";
+import { financialYearLabel, formatReceiptNumber } from "../donations/receipts.js";
+import { formatMemberCode, oneYearFrom } from "../members/repository.js";
 import { applyMigrations, discoverMigrations } from "../migrate.js";
 
 type QueryHandler = (query: string, values: unknown[]) => unknown[] | Promise<unknown[]>;
@@ -172,6 +174,18 @@ test("administrator bootstrap falls back to the built-in default password hash",
   assert.match(DEFAULT_ADMIN_PASSWORD_HASH, /^\$argon2id\$/);
 });
 
+test("member IDs, validity dates and receipt numbers follow the printed formats", () => {
+  assert.equal(formatMemberCode("individual", 1), "SHTF-M-0001");
+  assert.equal(formatMemberCode("organization", 12345), "SHTF-P-12345");
+  assert.throws(() => formatMemberCode("individual", 0));
+  assert.equal(oneYearFrom(new Date("2026-10-02T15:00:00.000Z")), "2027-10-02");
+  assert.equal(financialYearLabel("2026-04-01"), "2026-27");
+  assert.equal(financialYearLabel("2026-03-31"), "2025-26");
+  assert.equal(financialYearLabel("2099-12-31"), "2099-00");
+  assert.equal(formatReceiptNumber("2026-10-02", 42), "SHTF/2026-27/0042");
+  assert.throws(() => formatReceiptNumber("2026-10-02", 0));
+});
+
 test("donation report periods reject malformed and out-of-range dates", () => {
   const [start, end] = donationDateRange("monthly", "2026-02");
   assert.equal(start.toISOString(), "2026-02-01T00:00:00.000Z");
@@ -190,7 +204,7 @@ test("asset metadata is sanitized and file signatures are checked", () => {
 
 test("migration discovery is ordered, checksummed, and contains the full schema inventory", async () => {
   const migrations = await discoverMigrations();
-  assert.deepEqual(migrations.map((item) => item.version), ["001", "002", "003"]);
+  assert.deepEqual(migrations.map((item) => item.version), ["001", "002", "003", "004"]);
   assert.match(migrations[0]!.checksum, /^[0-9a-f]{64}$/);
   assert.equal(migrations[1]!.sql.includes("__DEFAULT_CONTENT_JSON__"), false);
   assert.ok(migrations[1]!.sql.includes("samriddhihelpteam@gmail.com"));
@@ -208,6 +222,9 @@ test("migration discovery is ordered, checksummed, and contains the full schema 
     "admin_audit_log",
     "monthly_donation_reports",
     "yearly_donation_reports",
+    "members",
+    "member_number_seq",
+    "donation_receipt_seq",
   ]) assert.ok(schema.includes(name), `missing schema object: ${name}`);
   assert.ok(schema.includes("data bytea NOT NULL"));
   assert.ok(schema.includes("reject_append_only_mutation"));

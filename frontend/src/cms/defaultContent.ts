@@ -1,6 +1,6 @@
 import { CmsSnapshot, SiteContent } from "./types"
 
-const images = {
+export const images = {
   hero: "https://images.unsplash.com/photo-1524069290683-0457abfe42c3?auto=format&fit=crop&w=2000&q=88",
   children:
     "https://images.unsplash.com/photo-1497486751825-1233686d5d80?auto=format&fit=crop&w=1400&q=84",

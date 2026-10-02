@@ -7,9 +7,11 @@ const navigation = [
   ["Home", "/"],
   ["About", "/#about"],
   ["Our work", "/#work"],
+  ["Team", "/team"],
   ["News", "/news"],
   ["Documents", "/documents"],
   ["Reports", "/reports"],
+  ["Join us", "/join"],
   ["Contact", "/#contact"],
 ] as const
 
@@ -104,6 +106,7 @@ function Footer() {
           <AppLink to="/">Home</AppLink>
           <AppLink to="/#about">About us</AppLink>
           <AppLink to="/#work">Our work</AppLink>
+          <AppLink to="/team">Our team</AppLink>
           <AppLink to="/news">News</AppLink>
         </div>
         <div className="footer-column">
@@ -115,8 +118,8 @@ function Footer() {
         <div className="footer-column">
           <h3>Support</h3>
           <AppLink to="/donate">Donate</AppLink>
-          <AppLink to="/#involved">Volunteer</AppLink>
-          <AppLink to="/#involved">Partner with us</AppLink>
+          <AppLink to="/join">Volunteer</AppLink>
+          <AppLink to="/join?type=organization">Partner with us</AppLink>
         </div>
         <div className="footer-column footer-contact">
           <h3>Contact</h3>

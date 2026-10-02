@@ -11,11 +11,13 @@ import DonationSection from "./sections/DonationSection"
 import DocumentsSection from "./sections/DocumentsSection"
 import ReportsSection from "./sections/ReportsSection"
 import SettingsSection from "./sections/SettingsSection"
+import MembersSection from "./sections/MembersSection"
+import ReceiptsSection from "./sections/ReceiptsSection"
 import AdminFeedbackProvider, {
   useAdminFeedback,
 } from "./components/AdminFeedback"
 
-type SectionId = "overview" | "home" | "fundraising" | "news" | "donation" | "documents" | "reports" | "settings"
+type SectionId = "overview" | "home" | "fundraising" | "news" | "members" | "donation" | "receipts" | "documents" | "reports" | "settings"
 const sections: {
   id: SectionId
   label: string
@@ -47,10 +49,22 @@ const sections: {
     description: "Draft and publish updates",
   },
   {
+    id: "members",
+    label: "Join requests",
+    icon: "users",
+    description: "Approve members and create ID cards",
+  },
+  {
     id: "donation",
     label: "Donation details",
     icon: "wallet",
     description: "QR, UPI and bank account",
+  },
+  {
+    id: "receipts",
+    label: "Receipts",
+    icon: "receipt",
+    description: "Issue and print donation receipts",
   },
   {
     id: "documents",
@@ -103,6 +117,10 @@ function DashboardWorkspace() {
         return <HomeContentSection onSaved={notify} />
       case "news":
         return <NewsSection onSaved={notify} />
+      case "members":
+        return <MembersSection onSaved={notify} />
+      case "receipts":
+        return <ReceiptsSection onSaved={notify} />
       case "donation":
         return <DonationSection onSaved={notify} />
       case "documents":

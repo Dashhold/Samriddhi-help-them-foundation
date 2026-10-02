@@ -377,7 +377,7 @@ function GetInvolved() {
       text: "Give your time, skills and energy to responsible action.",
       cta: "Become a volunteer",
       color: "yellow",
-      to: "/#contact",
+      to: "/join",
     },
     {
       icon: "hands",
@@ -385,7 +385,7 @@ function GetInvolved() {
       text: "Collaborate with Samriddhi on aligned CSR and social initiatives.",
       cta: "Explore partnership",
       color: "teal",
-      to: "/#contact",
+      to: "/join?type=organization",
     },
   ]
   return (

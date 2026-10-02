@@ -1,0 +1,257 @@
+/* Join us, Team, member ID cards and donation receipts */
+
+/* Join us page */
+.join-layout { display: grid; grid-template-columns: .72fr 1.28fr; gap: 28px; align-items: start; }
+.join-intro { position: sticky; top: 110px; padding: 34px; border: 1px solid var(--line); border-radius: var(--radius); background: #fff; }
+.join-intro h2 { margin: 0 0 22px; font: 700 31px/1.2 "Manrope", sans-serif; }
+.join-steps { margin: 0; padding: 0; list-style: none; display: grid; gap: 18px; }
+.join-steps li { display: grid; grid-template-columns: 38px 1fr; gap: 14px; }
+.join-steps li > span { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 50%; color: var(--pink); background: var(--pink-soft); font-weight: 800; }
+.join-steps strong { display: block; margin-bottom: 4px; font-size: 15px; }
+.join-steps p { margin: 0; color: var(--ink-soft); font-size: 13px; line-height: 1.6; }
+.join-privacy { display: flex; gap: 10px; margin-top: 26px; padding: 16px; border-radius: 12px; color: var(--teal-dark); background: var(--teal-soft); font-size: 12px; line-height: 1.55; }
+.join-privacy .icon { flex: 0 0 auto; }
+.join-card { padding: 34px; border: 1px solid var(--line); border-radius: var(--radius); background: #fff; }
+.join-form { display: grid; gap: 28px; }
+.join-type { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.join-type__option { position: relative; display: flex; align-items: center; gap: 13px; padding: 16px; border: 1.5px solid var(--line); border-radius: 14px; cursor: pointer; transition: border-color .2s, background .2s; }
+.join-type__option input { position: absolute; opacity: 0; pointer-events: none; }
+.join-type__option .icon { flex: 0 0 auto; color: var(--teal-dark); }
+.join-type__option strong, .join-type__option small { display: block; }
+.join-type__option strong { font-size: 14px; }
+.join-type__option small { margin-top: 3px; color: var(--ink-soft); font-size: 11px; }
+.join-type__option.is-selected { border-color: var(--pink); background: var(--pink-soft); }
+.join-type__option.is-selected .icon { color: var(--pink); }
+.join-type__option:focus-within { outline: 3px solid rgba(24,167,165,.35); outline-offset: 2px; }
+.join-form fieldset { min-width: 0; margin: 0; padding: 0; border: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+.join-form legend { float: left; grid-column: 1 / -1; width: 100%; margin: 0 0 2px; padding: 0 0 10px; border-bottom: 1px solid var(--line); font: 700 18px/1.3 "Manrope", sans-serif; }
+.join-form fieldset label { display: grid; gap: 7px; align-content: start; color: #64676a; font-size: 9px; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; }
+.join-form fieldset input:not([type="file"]), .join-form fieldset select, .join-form fieldset textarea { width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 13px 14px; outline: none; color: var(--ink); background: #fbfbfa; font: 400 14px/1.4 "DM Sans", sans-serif; letter-spacing: 0; text-transform: none; }
+.join-form fieldset textarea { resize: vertical; line-height: 1.55; }
+.join-form fieldset input:focus, .join-form fieldset select:focus, .join-form fieldset textarea:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(24,167,165,.1); }
+.join-field--full { grid-column: 1 / -1; }
+.join-photo { display: flex; align-items: center; gap: 20px; padding: 18px; border: 1px dashed #cbc8c1; border-radius: 14px; background: #fbfbfa; }
+.join-photo__preview { width: 104px; height: 128px; flex: 0 0 auto; display: grid; place-items: center; overflow: hidden; border: 1px solid var(--line); border-radius: 12px; color: #b9b6ae; background: #fff; }
+.join-photo__preview img { width: 100%; height: 100%; object-fit: cover; }
+.join-photo__preview--logo { width: 128px; height: 104px; }
+.join-photo__preview--logo img { padding: 8px; object-fit: contain; }
+.join-photo__control { display: grid; gap: 8px; }
+.join-photo__control small { color: var(--ink-soft); font-size: 12px; line-height: 1.5; }
+.join-form fieldset .join-photo__button { position: relative; width: fit-content; display: inline-flex; align-items: center; gap: 9px; padding: 11px 17px; border: 1px solid var(--pink); border-radius: 999px; color: var(--pink); background: #fff; font-size: 10px; cursor: pointer; }
+.join-form fieldset .join-photo__button:hover, .join-form fieldset .join-photo__button:focus-within { color: #fff; background: var(--pink); }
+.join-photo__button input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+.join-photo__control .join-error-text { color: #a12626; }
+.join-consent { display: flex; align-items: flex-start; gap: 12px; color: var(--ink-soft); font-size: 13px; line-height: 1.6; cursor: pointer; }
+.join-consent input { width: 18px; height: 18px; flex: 0 0 auto; margin-top: 2px; accent-color: var(--pink); }
+.join-error { margin: 0; padding: 13px 15px; border-radius: 10px; color: #8f2424; background: #fdeeee; font-size: 13px; line-height: 1.5; }
+.join-submit { justify-self: start; border: 0; cursor: pointer; }
+.join-submit:disabled { opacity: .6; cursor: progress; transform: none; }
+.join-success { padding: 30px 10px; text-align: center; }
+.join-success__icon { width: 74px; height: 74px; margin: 0 auto 20px; display: grid; place-items: center; border-radius: 50%; color: var(--teal-dark); background: var(--teal-soft); }
+.join-success h2 { margin: 0 0 12px; font: 700 32px/1.2 "Manrope", sans-serif; }
+.join-success p { max-width: 520px; margin: 0 auto 14px; color: var(--ink-soft); line-height: 1.7; }
+.join-success__reference code { padding: 4px 10px; border-radius: 8px; color: #6b4f00; background: var(--yellow-soft); font-weight: 700; letter-spacing: .08em; }
+.join-success__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; margin-top: 24px; }
+
+/* Team page */
+.team-heading { margin: 0; font: 700 clamp(30px, 3.4vw, 46px)/1.12 "Manrope", sans-serif; letter-spacing: -.035em; }
+.team-subheading { margin: 60px 0 24px; font: 700 28px/1.2 "Manrope", sans-serif; }
+.team-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 22px; }
+.team-card { display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius); background: #fff; transition: transform .3s, box-shadow .3s; }
+.team-card:hover { transform: translateY(-5px); box-shadow: var(--shadow); }
+.team-card__photo { aspect-ratio: 1 / 1.08; display: grid; place-items: center; overflow: hidden; color: #b9b6ae; background: var(--gray); }
+.team-card__photo img { width: 100%; height: 100%; object-fit: cover; }
+.team-card__photo--logo { border-bottom: 1px solid var(--line); background: #fff; }
+.team-card__photo--logo img { padding: 28px; object-fit: contain; }
+.team-card__body { flex: 1; display: flex; flex-direction: column; gap: 6px; padding: 20px 20px 22px; }
+.team-card__type { color: var(--teal-dark); font-size: 10px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+.team-card h3 { margin: 0; font: 700 20px/1.25 "Manrope", sans-serif; overflow-wrap: anywhere; }
+.team-card__role { margin: 0; color: var(--pink); font-size: 13px; font-weight: 700; }
+.team-card__location { margin: 0; display: flex; align-items: center; gap: 6px; color: var(--ink-soft); font-size: 12px; }
+.team-card__link { margin-top: auto; padding-top: 14px; display: inline-flex; align-items: center; gap: 8px; color: var(--pink); font-size: 11px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; transition: gap .2s; }
+.team-card__link:hover { gap: 12px; }
+.team-loading { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 60px 0; color: var(--ink-soft); }
+.team-loading span { width: 26px; height: 26px; border: 3px solid #e4e1da; border-top-color: var(--pink); border-radius: 50%; animation: team-spin .8s linear infinite; }
+@keyframes team-spin { to { transform: rotate(360deg); } }
+.team-cta { margin-top: 60px; display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 34px 38px; border-radius: var(--radius); color: #fff; background: var(--ink); }
+.team-cta h3 { margin: 0 0 6px; font: 700 26px/1.2 "Manrope", sans-serif; }
+.team-cta p { margin: 0; color: rgba(255,255,255,.7); }
+
+/* Member ID card: sizes are in em so the same card prints at exactly 54 × 85.6 mm */
+.member-id-card-pair { display: flex; flex-wrap: wrap; justify-content: center; gap: 24px; }
+.member-id-card { --card-pink: #e90068; --card-teal: #0b7777; position: relative; isolation: isolate; width: 32em; flex: 0 0 auto; aspect-ratio: 54 / 85.6; overflow: hidden; display: flex; flex-direction: column; align-items: center; padding: 2em 2em 9.2em; border-radius: 1.4em; color: #1d2124; background: #fff; box-shadow: 0 1.6em 4em rgba(20,32,36,.18); font-size: 10px; line-height: 1.35; text-align: center; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+.member-id-card--front { background: radial-gradient(circle at 50% 36%, #fff6e6 0 34%, transparent 35%), #fff; }
+.id-card-ribbon { position: absolute; z-index: -1; top: 0; left: 0; right: 0; height: .8em; background: linear-gradient(90deg, var(--card-pink) 0 38%, #f5b51b 38% 62%, #18a7a5 62%); }
+.id-card-brand img { width: 11em; height: 5em; object-fit: contain; }
+.id-card-type { margin-top: .6em; padding: .45em 1.2em; border-radius: 999px; color: var(--card-pink); background: #fff0f6; font-size: .85em; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+.id-card-photo { width: 11em; flex: 0 1 13.2em; min-height: 9em; margin-top: 1.1em; display: grid; place-items: center; overflow: hidden; border: .35em solid #fff; border-radius: 1.2em; color: #b6b2a8; background: #f1efea; box-shadow: 0 0 0 .12em #e7d6a5, 0 .8em 2em rgba(0,0,0,.12); }
+.id-card-photo img { width: 100%; height: 100%; object-fit: cover; }
+.id-card-photo--logo { width: 15em; flex-basis: 10em; min-height: 7em; background: #fff; }
+.id-card-photo--logo img { padding: 1em; object-fit: contain; }
+.id-card-name { max-width: 100%; margin: .45em 0 0; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; font: 700 2.1em/1.15 "Manrope", sans-serif; letter-spacing: -.02em; overflow-wrap: anywhere; }
+.id-card-represented { margin: .3em 0 0; color: #5a6064; font-size: 1em; }
+.id-card-designation { margin: .4em 0 0; color: var(--card-pink); font-size: 1.15em; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.id-card-facts { width: 100%; margin: 1em 0 0; padding: 1em 0 0; display: grid; grid-template-columns: 1fr 1fr; gap: .8em 1.2em; border-top: .1em solid #ece7da; text-align: left; }
+.id-card-facts div { min-width: 0; }
+.id-card-facts dt { color: #8a8478; font-size: .78em; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+.id-card-facts dd { margin: .2em 0 0; font-size: 1.05em; font-weight: 700; overflow-wrap: anywhere; }
+.id-card-verify { position: absolute; left: 0; right: 0; bottom: 0; display: flex; align-items: center; gap: 1em; padding: 1em 2em; color: #fff; background: var(--card-teal); text-align: left; }
+.id-card-qr { width: 6.2em; height: 6.2em; flex: 0 0 auto; border-radius: .4em; background: #fff; }
+.id-card-verify strong { display: block; font-size: 1.1em; }
+.id-card-verify span { display: block; margin-top: .3em; font-size: .78em; line-height: 1.35; opacity: .88; word-break: break-all; }
+.id-card-expired { position: absolute; top: 40%; left: 50%; padding: .3em 1em; border: .12em solid #c62828; border-radius: .3em; color: #c62828; background: rgba(255,255,255,.88); font: 800 2.6em/1 "Manrope", sans-serif; letter-spacing: .1em; text-transform: uppercase; transform: translate(-50%, -50%) rotate(-14deg); }
+.member-id-card--back { align-items: stretch; padding: 2.4em 2.2em 4.6em; text-align: left; }
+.member-id-card--back h4 { margin: 0; color: var(--card-pink); font: 800 1.45em/1.25 "Manrope", sans-serif; text-align: center; }
+.id-card-back-sub { margin: .4em 0 0; color: #6e6a60; font-size: .85em; letter-spacing: .1em; text-align: center; text-transform: uppercase; }
+.id-card-terms { margin: 1.5em 0 0; padding: 0 0 0 1.3em; display: grid; gap: .7em; color: #3d4245; font-size: .95em; line-height: 1.5; }
+.id-card-contact { margin: 1.4em 0 0; padding: 1em 1.2em; display: grid; gap: .3em; border-radius: .9em; color: #3d4245; background: #f6f4ef; font-size: .95em; font-style: normal; line-height: 1.45; }
+.id-card-sign { margin-top: auto; display: grid; justify-items: end; gap: .4em; color: #6e6a60; font-size: .85em; text-align: right; }
+.id-card-sign span { width: 12em; height: 3em; border-bottom: .1em solid #9a958a; }
+.id-card-legal { position: absolute; left: 0; right: 0; bottom: 0; padding: 1em 2.4em; color: rgba(255,255,255,.92); background: var(--card-teal); font-size: .8em; line-height: 1.4; text-align: center; }
+
+/* Public ID card page */
+.id-card-page { padding-top: 150px; }
+.site-announcement + .public-main .id-card-page { padding-top: 60px; }
+.id-card-back-link { margin-bottom: 28px; display: inline-flex; align-items: center; gap: 8px; color: var(--ink-soft); font-size: 12px; font-weight: 700; }
+.id-card-back-link .icon { transform: rotate(180deg); }
+.id-card-layout { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 40px; align-items: center; }
+.id-card-stage .member-id-card { font-size: clamp(8.5px, 2.6vw, 11px); }
+.id-card-status { padding: 30px; border: 1px solid var(--line); border-radius: var(--radius); background: #fff; }
+.id-card-status__badge { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 999px; color: var(--teal-dark); background: var(--teal-soft); font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.id-card-status__badge.is-expired { color: #a12626; background: #fdeeee; }
+.id-card-status h1 { margin: 18px 0 6px; font: 700 32px/1.15 "Manrope", sans-serif; letter-spacing: -.03em; overflow-wrap: anywhere; }
+.id-card-status__role { margin: 0; color: var(--pink); font-weight: 700; }
+.id-card-status dl { margin: 22px 0; padding: 16px 0; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; border-block: 1px solid var(--line); }
+.id-card-status dt { color: var(--ink-soft); font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+.id-card-status dd { margin: 4px 0 0; font-weight: 700; }
+.id-card-status > p { color: var(--ink-soft); font-size: 14px; line-height: 1.65; }
+.id-card-actions { margin: 22px 0 14px; display: flex; flex-wrap: wrap; align-items: center; gap: 14px; }
+.id-card-actions button { border: 0; cursor: pointer; }
+.id-card-status small { display: block; color: var(--ink-soft); font-size: 12px; line-height: 1.55; }
+
+/* Donation receipt */
+.donation-receipt { position: relative; isolation: isolate; container-type: inline-size; overflow: hidden; padding: 36px 40px 26px; border: 1px solid #e6dfcc; border-radius: 6px; color: #202124; background: #fffdf8; box-shadow: 0 14px 40px rgba(32,33,36,.08); font-size: 12px; line-height: 1.5; text-align: left; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+.receipt-ribbon { position: absolute; top: 0; left: 0; right: 0; height: 8px; background: linear-gradient(90deg, var(--pink) 0 38%, var(--yellow) 38% 62%, var(--teal) 62%); }
+.receipt-header { padding-bottom: 18px; display: grid; grid-template-columns: auto 1fr auto; align-items: start; gap: 20px; border-bottom: 2px solid #202124; }
+.receipt-header img { width: 120px; height: 55px; object-fit: contain; }
+.receipt-org { display: grid; gap: 2px; color: #55585c; font-size: 10.5px; }
+.receipt-org strong { color: #202124; font: 800 15px/1.3 "Manrope", sans-serif; letter-spacing: .04em; text-transform: uppercase; }
+.receipt-title { text-align: right; }
+.receipt-title h2 { margin: 0; color: var(--pink); font: 800 22px/1.1 "Manrope", sans-serif; letter-spacing: .02em; text-transform: uppercase; }
+.receipt-title span { margin-top: 6px; padding: 3px 9px; display: inline-block; border-radius: 999px; color: #a9004b; background: #fff0f6; font-size: 10px; font-weight: 800; letter-spacing: .08em; }
+.receipt-numbers { padding: 14px 0; display: flex; justify-content: space-between; gap: 20px; border-bottom: 1px solid #e5dcc7; }
+.receipt-numbers div { display: grid; gap: 2px; }
+.receipt-numbers div:last-child { text-align: right; }
+.receipt-numbers span, .receipt-label, .receipt-details dt { color: #8a8373; font-size: 9px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+.receipt-numbers strong { font-size: 14px; }
+.receipt-donor { padding: 18px 0 14px; display: grid; gap: 3px; color: #3f4346; }
+.receipt-donor-name { color: #202124; font: 700 20px/1.3 "Manrope", sans-serif; overflow-wrap: anywhere; }
+.receipt-amount { padding: 16px 18px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 18px; border-radius: 10px; background: var(--teal-soft); }
+.receipt-amount div { display: grid; gap: 2px; }
+.receipt-amount strong { color: var(--teal-dark); font: 800 26px/1.15 "Manrope", sans-serif; }
+.receipt-amount p { max-width: 360px; margin: 0; color: #24514f; font-weight: 700; text-align: right; }
+.receipt-details { margin: 16px 0 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.receipt-details div { padding: 10px 12px; border: 1px solid #ece5d3; border-radius: 8px; background: #fff; }
+.receipt-details dd { margin: 3px 0 0; font-weight: 700; overflow-wrap: anywhere; }
+.receipt-notes { margin: 12px 0 0; color: #3f4346; }
+.receipt-tax { margin-top: 18px; padding: 14px 16px; border: 1px dashed #d8bd71; border-radius: 10px; color: #4d4430; background: #fff8e4; }
+.receipt-tax strong { font-size: 12px; }
+.receipt-tax p { margin: 4px 0 6px; }
+.receipt-tax ul { margin: 0; padding-left: 18px; display: grid; gap: 2px; }
+.receipt-tax small { margin-top: 8px; display: block; color: #6f6550; font-size: 10px; line-height: 1.5; }
+.receipt-footer { margin-top: 26px; display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; }
+.receipt-footer p { margin: 0; color: var(--teal-dark); font: 700 14px/1.3 "Manrope", sans-serif; }
+.receipt-sign { display: grid; justify-items: center; gap: 4px; color: #55585c; font-size: 11px; text-align: center; }
+.receipt-sign i { width: 170px; height: 42px; border-bottom: 1px solid #8a8373; }
+.receipt-sign strong { color: #202124; font-size: 11px; }
+.receipt-generated { margin-top: 18px; display: block; color: #8a8373; font-size: 9.5px; text-align: center; }
+.receipt-watermark { position: absolute; z-index: -1; top: 50%; left: 50%; color: rgba(233,0,104,.07); font: 800 120px/1 "Manrope", sans-serif; letter-spacing: .1em; text-transform: uppercase; transform: translate(-50%, -50%) rotate(-18deg); pointer-events: none; }
+@container (max-width: 620px) {
+  .receipt-header { grid-template-columns: auto 1fr; }
+  .receipt-title { grid-column: 1 / -1; text-align: left; }
+  .receipt-details { grid-template-columns: 1fr 1fr; }
+  .receipt-amount p { text-align: left; }
+}
+@container (max-width: 420px) {
+  .receipt-header { grid-template-columns: 1fr; }
+  .receipt-details { grid-template-columns: 1fr; }
+  .receipt-numbers, .receipt-footer { flex-direction: column; align-items: flex-start; }
+  .receipt-numbers div:last-child { text-align: left; }
+}
+
+/* Admin: join requests and receipts */
+.admin-tabs { margin-bottom: 18px; padding-bottom: 14px; display: flex; flex-wrap: wrap; gap: 6px; border-bottom: 1px solid #eceeef; }
+.admin-tabs button { display: inline-flex; align-items: center; gap: 7px; padding: 8px 14px; border: 1px solid #e1e3e5; border-radius: 999px; color: #4a5256; background: #fff; font-size: 11px; font-weight: 700; cursor: pointer; }
+.admin-tabs button span { min-width: 20px; padding: 1px 6px; border-radius: 999px; background: #f0f2f3; font-size: 10px; }
+.admin-tabs button.active { border-color: var(--pink); color: var(--pink-dark); background: var(--pink-soft); }
+.admin-tabs button.active span { background: #fff; }
+.admin-member-item > img.admin-member-logo { border: 1px solid #eceeef; background: #fff; object-fit: contain; }
+.admin-member-badges { margin-bottom: 5px; display: flex; flex-wrap: wrap; gap: 5px; }
+.admin-badge--neutral { color: #4a5256; background: #f0f2f3; }
+.admin-modal--wide, .admin-modal--receipt { width: min(860px, 100%); }
+.admin-member-review { display: grid; grid-template-columns: 170px 1fr; gap: 22px; }
+.admin-member-photo { width: 170px; height: 210px; display: grid; place-items: center; overflow: hidden; border-radius: 12px; color: #9aa1a5; background: #eef0f1; }
+.admin-member-photo a { width: 100%; height: 100%; display: block; }
+.admin-member-photo img { width: 100%; height: 100%; object-fit: cover; }
+.admin-member-photo--logo { height: 150px; border: 1px solid #e6e8ea; background: #fff; }
+.admin-member-photo--logo img { padding: 12px; object-fit: contain; }
+.admin-member-details { margin: 0; display: grid; grid-template-columns: 1fr 1fr; align-content: start; gap: 12px 18px; }
+.admin-member-details div { min-width: 0; }
+.admin-member-details dt { color: #7a8185; font-size: 9px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.admin-member-details dd { margin: 3px 0 0; font-size: 12px; line-height: 1.5; overflow-wrap: anywhere; white-space: pre-line; }
+.admin-member-details dd a { color: var(--teal-dark); }
+.admin-member-details__wide { grid-column: 1 / -1; }
+.admin-member-approval { margin-top: 22px; padding: 18px; border-radius: 12px; background: #f7f8f9; }
+.admin-member-approval h3 { margin: 0 0 14px; font: 700 15px/1.3 "Manrope", sans-serif; }
+.admin-form-actions--spread { flex-wrap: wrap; justify-content: space-between; }
+.admin-form-actions--spread > div { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+.admin-id-card-stage { padding: 18px; display: flex; justify-content: center; border-radius: 12px; background: #f1f3f4; }
+.admin-id-card-stage .member-id-card { font-size: 9.5px; }
+.admin-receipt-editor { grid-column: span 5; }
+.admin-receipt-preview { grid-column: span 7; }
+.admin-receipt-editor fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
+.admin-receipt-issued { margin: 6px 0 18px; padding: 12px 14px; display: flex; align-items: center; gap: 12px; border-radius: 10px; color: #13715d; background: #e8f8f2; }
+.admin-receipt-issued strong, .admin-receipt-issued span { display: block; }
+.admin-receipt-issued strong { font-size: 14px; }
+.admin-receipt-issued span { color: #2f5d55; font-size: 11px; }
+.admin-receipt-preview__head { margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; }
+.admin-receipt-preview__head h3 { margin: 0; }
+
+@media (max-width: 1200px) {
+  .admin-receipt-editor, .admin-receipt-preview { grid-column: span 12; }
+}
+@media (max-width: 1100px) {
+  .id-card-layout { grid-template-columns: 1fr; }
+}
+@media (max-width: 1000px) {
+  .join-layout { grid-template-columns: 1fr; }
+  .join-intro { position: static; }
+}
+@media (max-width: 700px) {
+  .team-cta { flex-direction: column; align-items: flex-start; padding: 28px 24px; }
+  .admin-member-review { grid-template-columns: 1fr; }
+  .admin-member-photo { width: 100%; max-width: 220px; }
+  .admin-member-details { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .join-card, .join-intro { padding: 24px 18px; }
+  .join-type, .join-form fieldset { grid-template-columns: 1fr; }
+  .join-photo { flex-direction: column; align-items: flex-start; }
+  .join-submit { width: 100%; }
+  .id-card-page { padding-top: 110px; }
+  .member-id-card-pair { gap: 16px; }
+  .id-card-status { padding: 24px 20px; }
+  .donation-receipt { padding: 28px 18px 20px; }
+}
+
+/* Printing a single ID card or receipt (see lib/print.ts) */
+.print-sheet { display: none; }
+@media print {
+  body.is-printing > :not(.print-sheet) { display: none !important; }
+  body.is-printing .print-sheet { display: block !important; }
+  body.is-printing .print-sheet, body.is-printing .print-sheet * { visibility: visible !important; }
+  body.is-printing .print-sheet > * { margin: 0 !important; padding: 0 !important; border-radius: 0 !important; background: none !important; }
+  body.is-printing .print-sheet .member-id-card-pair { flex-wrap: nowrap; justify-content: flex-start; gap: 8mm; }
+  body.is-printing .print-sheet .member-id-card { font-size: 1.6875mm; box-shadow: none; outline: .2mm dashed #b5b5b5; outline-offset: 1mm; }
+  body.is-printing .print-sheet .donation-receipt { border-color: #d9d2bf; box-shadow: none; }
+}

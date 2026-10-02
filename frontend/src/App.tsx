@@ -8,6 +8,8 @@ import { NewsArticlePage, NewsPage } from "./pages/NewsPage"
 import DocumentsPage from "./pages/DocumentsPage"
 import DonatePage from "./pages/DonatePage"
 import ReportsPage from "./pages/ReportsPage"
+import JoinPage from "./pages/JoinPage"
+import { MemberIdCardPage, TeamPage } from "./pages/TeamPage"
 
 const AdminAccess = lazy(() => import("./admin/AdminAccess"))
 
@@ -39,12 +41,16 @@ function AppRoutes() {
         ? "Samriddhi Help Team Foundation"
         : path.startsWith("/news/")
           ? "News · Samriddhi Help Team Foundation"
-          : `${path
-              .slice(1)
-              .replace(/-/g, " ")
-              .replace(/\b\w/g, (letter) =>
-                letter.toUpperCase(),
-              )} · Samriddhi Help Team Foundation`
+          : path === "/join"
+            ? "Join us · Samriddhi Help Team Foundation"
+            : path.startsWith("/team/")
+              ? "Member ID card · Samriddhi Help Team Foundation"
+              : `${path
+                  .slice(1)
+                  .replace(/-/g, " ")
+                  .replace(/\b\w/g, (letter) =>
+                    letter.toUpperCase(),
+                  )} · Samriddhi Help Team Foundation`
     document.title = title
     if (location.hash) {
       requestAnimationFrame(() =>
@@ -84,6 +90,14 @@ function AppRoutes() {
   else if (path === "/documents") page = <DocumentsPage />
   else if (path === "/donate") page = <DonatePage />
   else if (path === "/reports") page = <ReportsPage />
+  else if (path === "/join") page = <JoinPage />
+  else if (path === "/team") page = <TeamPage />
+  else if (path.startsWith("/team/"))
+    page = (
+      <MemberIdCardPage
+        code={decodeURIComponent(path.slice("/team/".length))}
+      />
+    )
   else page = <NotFoundPage />
 
   return <PublicLayout>{page}</PublicLayout>
