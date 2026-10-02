@@ -1,0 +1,106 @@
+/* Founder and core team cards (home page and team page) */
+.leader-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+.leader-grid > .reveal { display: flex; }
+.leader-grid > .reveal > .leader-card { width: 100%; }
+.leader-card { display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius); background: #fff; transition: transform .3s, box-shadow .3s; }
+.leader-card:hover { transform: translateY(-5px); box-shadow: var(--shadow); }
+.leader-card__photo { aspect-ratio: 1 / 1; overflow: hidden; background: var(--gray); }
+.leader-card__photo img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s ease; }
+.leader-card:hover .leader-card__photo img { transform: scale(1.03); }
+.leader-card__body { flex: 1; display: flex; flex-direction: column; gap: 8px; padding: 22px 24px 24px; }
+.leader-card__role { color: var(--pink); font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+.leader-card h3 { margin: 0; font: 700 23px/1.45 "Manrope", "Noto Sans Devanagari", sans-serif; }
+.leader-card p { margin: 0; color: var(--ink-soft); font-size: 15px; line-height: 1.8; }
+.leader-card__link { margin-top: auto; padding-top: 14px; display: inline-flex; align-items: center; gap: 8px; color: var(--pink); font-size: 11px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; transition: gap .2s; }
+.leader-card__link:hover { gap: 12px; }
+
+.leadership { background: #fff; }
+.leadership .leader-grid { margin-top: 56px; }
+.leadership__more { margin-top: 30px; text-align: center; }
+.team-leaders { margin-bottom: 84px; }
+
+/* About page: mission and focus areas */
+.about-mission { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 64px; align-items: start; }
+.about-mission__intro { position: sticky; top: 112px; }
+.about-mission__intro h2 { margin: 0; font: 700 clamp(30px, 3.2vw, 44px)/1.4 "Manrope", "Noto Sans Devanagari", sans-serif; }
+.about-mission__intro p { margin: 20px 0 0; color: var(--ink-soft); font-size: 17px; line-height: 1.9; }
+.about-areas { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.about-area { padding: 26px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--cream); }
+.about-area:last-child:nth-child(odd) { grid-column: 1 / -1; }
+.about-area__icon { width: 48px; height: 48px; display: grid; place-items: center; border-radius: 14px; background: #fff; font-size: 24px; line-height: 1; box-shadow: 0 6px 18px rgba(32, 33, 36, .08); }
+.about-area h3 { margin: 18px 0 8px; font: 700 18px/1.55 "Manrope", "Noto Sans Devanagari", sans-serif; }
+.about-area p { margin: 0; color: var(--ink-soft); font-size: 15px; line-height: 1.85; }
+
+/* About page: founder profiles */
+.leader-jump { display: flex; flex-wrap: wrap; gap: 10px; margin: -12px 0 24px; }
+.leader-jump a { display: inline-flex; align-items: center; gap: 10px; padding: 6px 16px 6px 6px; border: 1px solid var(--line); border-radius: 999px; background: #fff; font-size: 15px; font-weight: 600; transition: border-color .2s, color .2s; }
+.leader-jump a:hover { border-color: var(--pink); color: var(--pink); }
+.leader-jump img { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; object-position: center top; }
+
+.leader-profile { scroll-margin-top: 104px; display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 56px; padding: 56px 0; border-top: 1px solid var(--line); }
+.leader-profile__aside { position: sticky; top: 112px; align-self: start; }
+.leader-profile__photo { aspect-ratio: 1 / 1; overflow: hidden; border-radius: var(--radius); background: var(--gray); box-shadow: var(--shadow); }
+.leader-profile__photo img { width: 100%; height: 100%; object-fit: cover; }
+.leader-profile__identity { margin-top: 22px; }
+.leader-profile__identity h3 { margin: 0; font: 700 29px/1.45 "Manrope", "Noto Sans Devanagari", sans-serif; }
+.leader-profile__role { margin: 6px 0 0; color: var(--pink); font-size: 12px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+.leader-profile__org { margin: 4px 0 0; color: var(--ink-soft); font-size: 13px; }
+.leader-profile__highlights { margin: 22px 0 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.leader-profile__highlights li { padding: 16px; border-radius: var(--radius-sm); background: var(--pink-soft); }
+.leader-profile__highlights strong { display: block; color: var(--pink); font: 800 26px/1.3 "Manrope", "Noto Sans Devanagari", sans-serif; }
+.leader-profile__highlights span { display: block; margin-top: 6px; color: var(--ink-soft); font-size: 13px; line-height: 1.6; }
+
+.leader-profile__body { color: var(--ink-soft); font-size: 16.5px; line-height: 1.95; }
+.leader-profile__body p { margin: 0 0 16px; }
+.leader-profile__body .leader-profile__tagline { margin-bottom: 22px; color: var(--ink); font: 700 clamp(23px, 2.3vw, 30px)/1.5 "Manrope", "Noto Sans Devanagari", sans-serif; }
+.leader-profile__section { margin-top: 34px; }
+.leader-profile__body h4 { margin: 0 0 12px; color: var(--ink); font: 700 21px/1.5 "Manrope", "Noto Sans Devanagari", sans-serif; }
+.leader-list { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+.leader-list li { position: relative; padding-left: 26px; }
+.leader-list li::before { content: ""; position: absolute; left: 4px; top: .8em; width: 8px; height: 8px; border-radius: 50%; background: var(--teal); }
+
+.leader-vision { margin-top: 38px; padding: 30px 32px; border-left: 4px solid var(--pink); border-radius: 0 var(--radius) var(--radius) 0; background: var(--pink-soft); }
+.leader-vision blockquote { margin: 0 0 18px; }
+.leader-vision blockquote p { margin: 0; color: var(--ink); font: 600 20px/1.8 "DM Sans", "Noto Sans Devanagari", sans-serif; }
+.leader-vision .leader-vision__belief { margin-bottom: 0; color: var(--pink-dark); font-size: 18px; font-weight: 700; }
+
+.leader-message { margin: 38px 0 0; padding: 34px 36px; border-radius: var(--radius); color: #fff; background: var(--ink); }
+.leader-message__label { display: block; margin-bottom: 14px; color: var(--yellow); font-size: 11px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+.leader-message blockquote { margin: 0; }
+.leader-message blockquote p { margin: 0; color: rgba(255, 255, 255, .9); font-size: 18px; line-height: 1.95; }
+.leader-message figcaption { margin-top: 22px; display: grid; gap: 4px; }
+.leader-message figcaption strong { color: #fff; font: 700 18px/1.5 "Manrope", "Noto Sans Devanagari", sans-serif; }
+.leader-message figcaption span { color: rgba(255, 255, 255, .6); font-size: 13px; }
+
+/* About page: vision */
+.about-vision { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: 64px; align-items: start; }
+.about-vision h2 { margin: 0; font: 700 clamp(32px, 3.4vw, 48px)/1.35 "Manrope", "Noto Sans Devanagari", sans-serif; }
+.about-vision__motto { margin: 18px 0 0; display: flex; flex-wrap: wrap; gap: 6px 0; color: var(--pink); font: 700 19px/1.6 "Manrope", "Noto Sans Devanagari", sans-serif; }
+.about-vision__motto i { margin: 0 12px; color: #cfcac1; font-style: normal; font-weight: 400; }
+.about-vision__intro { margin: 18px 0 0; color: var(--ink-soft); font-size: 17px; line-height: 1.9; }
+.about-vision__actions { margin-top: 30px; display: flex; flex-wrap: wrap; align-items: center; gap: 18px 24px; }
+.about-vision__list { margin: 0; padding: 0; list-style: none; display: grid; gap: 12px; }
+.about-vision__list li { display: flex; align-items: flex-start; gap: 14px; padding: 16px 20px; border-radius: var(--radius-sm); background: #fff; color: var(--ink); font-size: 16px; line-height: 1.8; }
+.about-vision__list .icon { margin-top: 5px; color: var(--teal-dark); }
+
+@media (max-width: 1000px) {
+  .about-mission, .about-vision { grid-template-columns: 1fr; gap: 36px; }
+  .about-mission__intro { position: static; }
+  .leader-profile { grid-template-columns: 1fr; gap: 28px; }
+  .leader-profile__aside { position: static; display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 24px; align-items: center; }
+  .leader-profile__identity { margin-top: 0; }
+  .leader-profile__highlights { grid-column: 1 / -1; margin-top: 0; }
+}
+@media (max-width: 900px) {
+  .leader-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+  .leader-grid, .about-areas { grid-template-columns: 1fr; }
+  .about-area:last-child:nth-child(odd) { grid-column: auto; }
+  .leader-profile { padding: 40px 0; }
+  .leader-profile__aside { grid-template-columns: 110px minmax(0, 1fr); gap: 16px; }
+  .leader-profile__identity h3 { font-size: 23px; }
+  .leader-profile__body { font-size: 15.5px; }
+  .leader-vision, .leader-message { padding: 24px 20px; }
+  .team-leaders { margin-bottom: 64px; }
+}

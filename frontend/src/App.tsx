@@ -10,6 +10,7 @@ import DonatePage from "./pages/DonatePage"
 import ReportsPage from "./pages/ReportsPage"
 import JoinPage from "./pages/JoinPage"
 import { MemberIdCardPage, TeamPage } from "./pages/TeamPage"
+import AboutPage from "./pages/AboutPage"
 
 const AdminAccess = lazy(() => import("./admin/AdminAccess"))
 
@@ -43,6 +44,8 @@ function AppRoutes() {
           ? "News · Samriddhi Help Team Foundation"
           : path === "/join"
             ? "Join us · Samriddhi Help Team Foundation"
+            : path === "/about"
+              ? "About us · Samriddhi Help Team Foundation"
             : path.startsWith("/team/")
               ? "Member ID card · Samriddhi Help Team Foundation"
               : `${path
@@ -90,6 +93,7 @@ function AppRoutes() {
   else if (path === "/documents") page = <DocumentsPage />
   else if (path === "/donate") page = <DonatePage />
   else if (path === "/reports") page = <ReportsPage />
+  else if (path === "/about") page = <AboutPage />
   else if (path === "/join") page = <JoinPage />
   else if (path === "/team") page = <TeamPage />
   else if (path.startsWith("/team/"))

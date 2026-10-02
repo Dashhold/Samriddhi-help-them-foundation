@@ -4,6 +4,8 @@ import { useCms } from "../cms/CmsProvider"
 import { AppLink, navigate, resolvePublicAsset } from "../lib/router"
 import NewsCard from "../components/NewsCard"
 import CertificatePreviewModal from "../components/CertificatePreviewModal"
+import LeaderCard from "../components/LeaderCard"
+import { leaders } from "../content/leadership"
 import {
   ButtonLink,
   Icon,
@@ -153,6 +155,35 @@ function About() {
             See our governance
           </ButtonLink>
         </Reveal>
+      </div>
+    </section>
+  )
+}
+
+function Leadership() {
+  return (
+    <section className="section leadership" id="leadership">
+      <div className="page-shell">
+        <Reveal>
+          <SectionHeading
+            centered
+            eyebrow="Leadership"
+            title="Our founders & core team"
+            body="Samriddhi was founded in 2025 by people who bring business experience, healthcare work and years of grassroots service to every initiative."
+          />
+        </Reveal>
+        <div className="leader-grid">
+          {leaders.map((leader) => (
+            <Reveal key={leader.id}>
+              <LeaderCard leader={leader} />
+            </Reveal>
+          ))}
+        </div>
+        <div className="leadership__more">
+          <ButtonLink to="/about" kind="text">
+            Read the full profiles
+          </ButtonLink>
+        </div>
       </div>
     </section>
   )
@@ -564,6 +595,10 @@ function Transparency() {
               <dd>RTKS52433D</dd>
             </div>
             <div>
+              <dt>NPO Darpan ID</dt>
+              <dd>HR/2025/0863511</dd>
+            </div>
+            <div className="legal-data__wide">
               <dt>Registered address</dt>
               <dd>{content.contact.address}</dd>
             </div>
@@ -594,7 +629,7 @@ const faqs = [
   ],
   [
     "Where can I verify the foundation?",
-    "The Documents page provides direct links to incorporation, Section 8, 12AB, 80G, CSR, PAN, TAN and governance records.",
+    "The Documents page provides direct links to incorporation, Section 8, 12AB, 80G, CSR, NPO Darpan, PAN, TAN and governance records.",
   ],
   [
     "How can an organisation partner with Samriddhi?",
@@ -784,6 +819,7 @@ export default function HomePage() {
       <Hero />
       <TrustStrip />
       <About />
+      <Leadership />
       <FundRaising />
       <FocusAreas />
       <Impact />

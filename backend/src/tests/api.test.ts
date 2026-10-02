@@ -459,7 +459,7 @@ test("public content hides private records while authenticated editors receive t
   const health = await app.inject({ method: "GET", url: "/health" });
   assert.equal(health.statusCode, 200);
   assert.equal(health.json().migrations.current, true);
-  assert.equal(health.json().migrations.expected, "004");
+  assert.equal(health.json().migrations.expected, "005");
 
   assert.equal(publicContent.headers["access-control-allow-origin"], undefined);
 

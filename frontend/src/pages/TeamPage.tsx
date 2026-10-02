@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from "react"
 import { images } from "../cms/defaultContent"
 import type { PageBanner } from "../cms/types"
+import LeaderCard from "../components/LeaderCard"
 import MemberIdCard from "../components/MemberIdCard"
+import { leaders } from "../content/leadership"
 import { ButtonLink, Icon, PageHero } from "../components/ui"
 import { ApiError } from "../lib/api"
 import { printElement } from "../lib/print"
@@ -102,6 +104,22 @@ export function TeamPage() {
       <PageHero banner={banner} />
       <section className="content-section">
         <div className="page-shell">
+          <div className="route-intro">
+            <div>
+              <span className="eyebrow">Leadership</span>
+              <h2 className="team-heading">Founders & core team</h2>
+            </div>
+            <p>
+              The people who founded Samriddhi and guide its work. Read their
+              full profiles on the About page.
+            </p>
+          </div>
+          <div className="leader-grid team-leaders">
+            {leaders.map((leader) => (
+              <LeaderCard key={leader.id} leader={leader} />
+            ))}
+          </div>
+
           <div className="route-intro">
             <div>
               <span className="eyebrow">Members & volunteers</span>

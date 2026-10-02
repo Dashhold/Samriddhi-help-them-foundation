@@ -323,6 +323,37 @@ export const defaultSiteContent: SiteContent = {
       isPublic: true,
       featured: false,
     },
+    // Added to the live database by backend migration 005_npo_darpan_documents.sql.
+    {
+      id: "npo-darpan-registration",
+      title: "NPO Darpan Registration Profile",
+      category: "NPO Darpan",
+      description:
+        "The foundation's profile on NITI Aayog's NPO Darpan portal, showing its Darpan ID, registration details, office bearers, working area and achievements.",
+      reference: "Darpan ID HR/2025/0863511",
+      issuedAt: "2025-10-28",
+      validThrough: "Current",
+      url: "documents/npo-darpan-registration-profile.pdf",
+      fileType: "PDF",
+      fileSize: "947 KB",
+      isPublic: true,
+      featured: false,
+    },
+    {
+      id: "npo-darpan-affidavit",
+      title: "NPO Darpan Affidavit",
+      category: "NPO Darpan",
+      description:
+        "Affidavit submitted to NITI Aayog for NPO Darpan registration, confirming the foundation's particulars and its office bearers and key functionaries.",
+      reference: "Declared by Jagbir Singh, President",
+      issuedAt: "2025-10-28",
+      validThrough: "Current",
+      url: "documents/npo-darpan-affidavit.pdf",
+      fileType: "PDF",
+      fileSize: "579 KB",
+      isPublic: true,
+      featured: false,
+    },
   ],
   reports: [],
   contact: {

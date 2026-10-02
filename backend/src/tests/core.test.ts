@@ -204,7 +204,7 @@ test("asset metadata is sanitized and file signatures are checked", () => {
 
 test("migration discovery is ordered, checksummed, and contains the full schema inventory", async () => {
   const migrations = await discoverMigrations();
-  assert.deepEqual(migrations.map((item) => item.version), ["001", "002", "003", "004"]);
+  assert.deepEqual(migrations.map((item) => item.version), ["001", "002", "003", "004", "005"]);
   assert.match(migrations[0]!.checksum, /^[0-9a-f]{64}$/);
   assert.equal(migrations[1]!.sql.includes("__DEFAULT_CONTENT_JSON__"), false);
   assert.ok(migrations[1]!.sql.includes("samriddhihelpteam@gmail.com"));

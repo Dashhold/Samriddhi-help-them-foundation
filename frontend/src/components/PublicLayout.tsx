@@ -5,7 +5,7 @@ import { Icon, Logo } from "./ui"
 
 const navigation = [
   ["Home", "/"],
-  ["About", "/#about"],
+  ["About", "/about"],
   ["Our work", "/#work"],
   ["Team", "/team"],
   ["News", "/news"],
@@ -104,7 +104,8 @@ function Footer() {
         <div className="footer-column">
           <h3>Explore</h3>
           <AppLink to="/">Home</AppLink>
-          <AppLink to="/#about">About us</AppLink>
+          <AppLink to="/about">About us</AppLink>
+          <AppLink to="/about#leadership">Our founders</AppLink>
           <AppLink to="/#work">Our work</AppLink>
           <AppLink to="/team">Our team</AppLink>
           <AppLink to="/news">News</AppLink>
