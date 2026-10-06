@@ -2,7 +2,7 @@ import { FormEvent, useEffect, useMemo, useState } from "react"
 import { useCms } from "../cms/CmsProvider"
 import { DonorType } from "../payments/contracts"
 import { Icon, PageHero } from "../components/ui"
-import { resolvePublicAsset, useAppLocation } from "../lib/router"
+import { AppLink, resolvePublicAsset, useAppLocation } from "../lib/router"
 
 interface ReceiptRequest {
   id: string
@@ -317,8 +317,9 @@ export default function DonatePage() {
                       style={{ width: 17, marginTop: 2 }}
                     />
                     <span>
-                      I confirm these details are accurate and consent to the
-                      foundation contacting me for verification.
+                      I confirm these details are accurate, consent to the
+                      foundation contacting me for verification, and have read
+                      the <AppLink to="/privacy-policy">Privacy Policy</AppLink>.
                     </span>
                   </label>
                   <button className="button button--primary" type="submit">

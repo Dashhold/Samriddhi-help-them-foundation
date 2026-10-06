@@ -1,0 +1,440 @@
+/* Registered brand treatment and shared public controls */
+.brand-logo {
+  position: relative;
+}
+
+.brand-logo__art {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+}
+
+.brand-logo__art > img {
+  width: auto;
+  max-width: 100%;
+}
+
+.brand-logo__registered {
+  position: absolute;
+  z-index: 1;
+  top: 2px;
+  right: -12px;
+  color: var(--pink-dark);
+  font: 800 12px/1 "Manrope", sans-serif;
+}
+
+.brand-logo--light .brand-logo__registered {
+  color: var(--yellow);
+}
+
+.brand-logo__fallback-text {
+  display: grid;
+  gap: 3px;
+  line-height: 1;
+}
+
+.navbar {
+  box-shadow: 0 1px 0 rgba(32, 33, 36, 0.02);
+}
+
+.nav-links a {
+  padding: 12px 2px;
+  color: #3e4145;
+  transition: color 0.2s ease;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+  color: var(--pink-dark);
+}
+
+.nav-links a.active::after {
+  right: 0;
+}
+
+.donate-button {
+  position: relative;
+  isolation: isolate;
+  gap: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.38);
+  background: linear-gradient(135deg, #f20b75 0%, var(--pink) 48%, var(--pink-dark) 100%);
+  box-shadow: 0 10px 24px rgba(233, 0, 104, 0.24);
+}
+
+.donate-button::before {
+  content: "♥";
+  font-size: 12px;
+  line-height: 1;
+}
+
+.donate-button::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 20%, rgba(255, 255, 255, 0.24) 48%, transparent 72%);
+  transform: translateX(-120%);
+  transition: transform 0.5s ease;
+}
+
+.donate-button:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, var(--pink) 0%, var(--pink-dark) 100%);
+  box-shadow: 0 14px 30px rgba(233, 0, 104, 0.3);
+}
+
+.donate-button:hover::after {
+  transform: translateX(120%);
+}
+
+.menu-button {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  color: var(--ink);
+  background: var(--white);
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+}
+
+.menu-button:hover {
+  color: var(--pink-dark);
+  border-color: rgba(233, 0, 104, 0.32);
+  background: var(--pink-soft);
+  transform: translateY(-1px);
+}
+
+.mobile-menu a {
+  transition: color 0.2s ease, padding 0.2s ease;
+}
+
+.mobile-menu a:hover {
+  padding-left: 6px;
+  color: var(--pink-dark);
+}
+
+.button {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border: 1px solid transparent;
+  box-shadow: 0 10px 26px rgba(32, 33, 36, 0.1);
+  cursor: pointer;
+  transition: transform 0.22s ease, box-shadow 0.22s ease, background 0.22s ease, color 0.22s ease, border-color 0.22s ease, gap 0.22s ease;
+}
+
+.button .icon {
+  box-sizing: content-box;
+  padding: 6px;
+  margin-right: -10px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+  transition: transform 0.22s ease, background 0.22s ease;
+}
+
+.button::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 18%, rgba(255, 255, 255, 0.22) 48%, transparent 72%);
+  transform: translateX(-125%);
+  transition: transform 0.55s ease;
+}
+
+.button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 34px rgba(32, 33, 36, 0.16);
+}
+
+.button:hover::before {
+  transform: translateX(125%);
+}
+
+.button:hover .icon {
+  transform: translateX(3px);
+}
+
+.button:active,
+.donate-button:active,
+.menu-button:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.button--primary {
+  background: linear-gradient(135deg, #f20b75 0%, var(--pink) 52%, var(--pink-dark) 100%);
+  box-shadow: 0 12px 28px rgba(233, 0, 104, 0.22);
+}
+
+.button--primary:hover {
+  background: linear-gradient(135deg, var(--pink) 0%, var(--pink-dark) 100%);
+  box-shadow: 0 16px 34px rgba(233, 0, 104, 0.28);
+}
+
+.button--light {
+  border-color: rgba(32, 33, 36, 0.08);
+  box-shadow: 0 12px 28px rgba(32, 33, 36, 0.12);
+}
+
+.button--light .icon {
+  background: var(--pink-soft);
+  color: var(--pink-dark);
+}
+
+.button--secondary {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(8px);
+}
+
+.button--text {
+  isolation: auto;
+  overflow: visible;
+  border: 0;
+  box-shadow: none;
+}
+
+.button--text::before {
+  display: none;
+}
+
+.button--text .icon {
+  padding: 5px;
+  background: var(--pink-soft);
+}
+
+.button--text:hover {
+  box-shadow: none;
+}
+
+.button:disabled {
+  opacity: 0.58;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.button:focus-visible,
+.donate-button:focus-visible,
+.menu-button:focus-visible,
+.nav-links a:focus-visible,
+.mobile-menu a:focus-visible {
+  outline: 3px solid rgba(24, 167, 165, 0.42);
+  outline-offset: 4px;
+}
+
+.mobile-donate a {
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: linear-gradient(135deg, var(--pink), var(--pink-dark));
+  box-shadow: 0 8px 22px rgba(233, 0, 104, 0.24);
+}
+
+@media (max-width: 600px) {
+  .brand-logo__registered {
+    top: 1px;
+    right: -10px;
+    font-size: 10px;
+  }
+
+  .donate-button {
+    gap: 5px;
+    box-shadow: 0 7px 18px rgba(233, 0, 104, 0.2);
+  }
+
+  .donate-button::before {
+    font-size: 10px;
+  }
+
+  .button .icon {
+    padding: 5px;
+    margin-right: -8px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button,
+  .button::before,
+  .button .icon,
+  .donate-button,
+  .donate-button::after,
+  .menu-button,
+  .mobile-menu a {
+    transition: none;
+  }
+}
+
+.brand-logo--fallback .brand-logo__art {
+  display: inline-flex;
+  gap: 0;
+  line-height: normal;
+}
+
+.brand-logo--fallback .brand-logo__fallback-text {
+  display: grid;
+  gap: 3px;
+  line-height: 1;
+}
+
+.button--text:hover {
+  transform: none;
+}
+
+/* Light public footer */
+.footer {
+  position: relative;
+  overflow: hidden;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 8% 10%, rgba(233, 0, 104, 0.07), transparent 25%),
+    radial-gradient(circle at 92% 18%, rgba(24, 167, 165, 0.11), transparent 30%),
+    linear-gradient(180deg, #f9fcfb 0%, #edf8f5 100%);
+  border-top: 1px solid rgba(24, 167, 165, 0.16);
+}
+
+.footer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--pink) 0 36%, var(--yellow) 36% 58%, var(--teal) 58% 100%);
+}
+
+.footer .brand-logo--light .brand-logo__registered {
+  color: var(--pink-dark);
+}
+
+.footer-brand p {
+  color: #55625f;
+}
+
+.footer-brand > span {
+  color: var(--teal-dark);
+  font-weight: 800;
+}
+
+.footer-column h3 {
+  color: var(--pink-dark);
+}
+
+.footer-column a,
+.footer-column > span {
+  color: #4e5d5a;
+}
+
+.footer-column a:hover {
+  color: var(--pink-dark);
+}
+
+.footer-bottom {
+  border-top-color: rgba(32, 33, 36, 0.11);
+  color: #6b7774;
+}
+
+.footer-bottom a {
+  color: #4e5d5a;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.footer-bottom a:hover {
+  color: var(--pink-dark);
+}
+
+/* Specificity guards: index.css declarations follow imported component styles. */
+.navbar .donate-button {
+  background: linear-gradient(135deg, #f20b75 0%, var(--pink) 48%, var(--pink-dark) 100%);
+  transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.navbar .donate-button:hover {
+  background: linear-gradient(135deg, var(--pink) 0%, var(--pink-dark) 100%);
+}
+
+.navbar .menu-button {
+  padding: 0;
+  border: 1px solid var(--line);
+  background: var(--white);
+}
+
+.navbar .menu-button:hover {
+  border-color: rgba(233, 0, 104, 0.32);
+  background: var(--pink-soft);
+}
+
+body .button {
+  transition: transform 0.22s ease, box-shadow 0.22s ease, background 0.22s ease, color 0.22s ease, border-color 0.22s ease, gap 0.22s ease;
+}
+
+body .button--primary {
+  background: linear-gradient(135deg, #f20b75 0%, var(--pink) 52%, var(--pink-dark) 100%);
+  box-shadow: 0 12px 28px rgba(233, 0, 104, 0.22);
+}
+
+body .button--primary:hover {
+  background: linear-gradient(135deg, var(--pink) 0%, var(--pink-dark) 100%);
+  box-shadow: 0 16px 34px rgba(233, 0, 104, 0.28);
+}
+
+body .button--light {
+  border-color: rgba(32, 33, 36, 0.08);
+  box-shadow: 0 12px 28px rgba(32, 33, 36, 0.12);
+}
+
+body .button--secondary {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(8px);
+}
+
+body .button--text,
+body .button--text:hover {
+  border: 0;
+  box-shadow: none;
+  transform: none;
+}
+
+body .footer {
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 8% 10%, rgba(233, 0, 104, 0.07), transparent 25%),
+    radial-gradient(circle at 92% 18%, rgba(24, 167, 165, 0.11), transparent 30%),
+    linear-gradient(180deg, #f9fcfb 0%, #edf8f5 100%);
+  border-top: 1px solid rgba(24, 167, 165, 0.16);
+}
+
+.footer .footer-brand p {
+  color: #55625f;
+}
+
+.footer .footer-brand > span {
+  color: var(--teal-dark);
+  font-weight: 800;
+}
+
+.footer .footer-column h3 {
+  color: var(--pink-dark);
+}
+
+.footer .footer-column a,
+.footer .footer-column > span {
+  color: #4e5d5a;
+}
+
+.footer .footer-column a:hover {
+  color: var(--pink-dark);
+}
+
+.footer .footer-bottom {
+  border-top-color: rgba(32, 33, 36, 0.11);
+  color: #6b7774;
+}
+
+@media (min-width: 601px) {
+  .footer .footer-bottom {
+    padding-right: 190px;
+  }
+}

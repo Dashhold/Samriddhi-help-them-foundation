@@ -4,6 +4,8 @@
 @import "./styles/admin.css";
 @import "./styles/members.css";
 @import "./styles/about.css";
+@import "./styles/brand-controls.css";
+@import "./styles/privacy.css";
 
 :root {
   --pink: #e90068;

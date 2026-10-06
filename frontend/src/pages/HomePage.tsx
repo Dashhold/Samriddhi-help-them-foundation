@@ -795,6 +795,10 @@ function Contact() {
                   placeholder="How would you like to get involved?"
                 />
               </label>
+              <p className="form-privacy">
+                By preparing an enquiry, you acknowledge our{" "}
+                <AppLink to="/privacy-policy">Privacy Policy</AppLink>.
+              </p>
               <button
                 type="submit"
                 formNoValidate

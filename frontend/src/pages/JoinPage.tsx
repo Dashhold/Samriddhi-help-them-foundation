@@ -238,7 +238,8 @@ export default function JoinPage() {
               <Icon name="shield" size={18} />
               <span>
                 Only your name, photo, role and city are shown publicly. Your
-                phone, email and address stay private with the foundation.
+                phone, email and address stay private with the foundation. Read
+                our <AppLink to="/privacy-policy">Privacy Policy</AppLink>.
               </span>
             </div>
           </aside>

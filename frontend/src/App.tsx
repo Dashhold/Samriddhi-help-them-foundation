@@ -11,6 +11,7 @@ import ReportsPage from "./pages/ReportsPage"
 import JoinPage from "./pages/JoinPage"
 import { MemberIdCardPage, TeamPage } from "./pages/TeamPage"
 import AboutPage from "./pages/AboutPage"
+import PrivacyPolicyPage from "./pages/PrivacyPolicyPage"
 
 const AdminAccess = lazy(() => import("./admin/AdminAccess"))
 
@@ -94,6 +95,7 @@ function AppRoutes() {
   else if (path === "/donate") page = <DonatePage />
   else if (path === "/reports") page = <ReportsPage />
   else if (path === "/about") page = <AboutPage />
+  else if (path === "/privacy-policy") page = <PrivacyPolicyPage />
   else if (path === "/join") page = <JoinPage />
   else if (path === "/team") page = <TeamPage />
   else if (path.startsWith("/team/"))

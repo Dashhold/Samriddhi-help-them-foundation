@@ -222,23 +222,32 @@ export function Logo({
       to={to}
       aria-label="Samriddhi Help Team Foundation home"
     >
-      {failed ? (
-        <span aria-hidden="true">
-          <b>समृद्धि</b>
-          <i>Help Team Foundation</i>
+      <span className="brand-logo__art">
+        {failed ? (
+          <span className="brand-logo__fallback-text" aria-hidden="true">
+            <b>समृद्धि</b>
+            <i>Help Team Foundation</i>
+          </span>
+        ) : (
+          <img
+            src={logo}
+            alt="Samriddhi Help Team Foundation"
+            width={851}
+            height={388}
+            loading={light ? "lazy" : "eager"}
+            fetchPriority={light ? "auto" : "high"}
+            decoding="async"
+            onError={() => setFailed(true)}
+          />
+        )}
+        <span
+          className="brand-logo__registered"
+          aria-hidden="true"
+          title="Registered trademark"
+        >
+          ®
         </span>
-      ) : (
-        <img
-          src={logo}
-          alt="Samriddhi Help Team Foundation"
-          width={851}
-          height={388}
-          loading={light ? "lazy" : "eager"}
-          fetchPriority={light ? "auto" : "high"}
-          decoding="async"
-          onError={() => setFailed(true)}
-        />
-      )}
+      </span>
     </AppLink>
   )
 }

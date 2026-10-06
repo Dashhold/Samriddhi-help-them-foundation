@@ -104,3 +104,142 @@
   .leader-vision, .leader-message { padding: 24px 20px; }
   .team-leaders { margin-bottom: 64px; }
 }
+
+/* English/Hindi biography selector */
+.about-language {
+  margin-bottom: 64px;
+  padding: 20px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  border: 1px solid rgba(24, 167, 165, 0.22);
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, var(--teal-soft), #fff 58%, var(--pink-soft));
+  box-shadow: 0 12px 34px rgba(32, 33, 36, 0.06);
+}
+
+.about-language__intro {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.about-language__badge {
+  width: 54px;
+  height: 54px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  color: var(--teal-dark);
+  background: var(--white);
+  box-shadow: 0 8px 22px rgba(32, 33, 36, 0.09);
+  font: 800 15px/1 "Manrope", "Noto Sans Devanagari", sans-serif;
+}
+
+.about-language__intro .eyebrow {
+  margin-bottom: 4px;
+}
+
+.about-language__intro strong,
+.about-language__intro small {
+  display: block;
+}
+
+.about-language__intro strong {
+  font: 700 17px/1.4 "Manrope", "Noto Sans Devanagari", sans-serif;
+}
+
+.about-language__intro small {
+  margin-top: 3px;
+  color: var(--ink-soft);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.about-language__switch {
+  flex: 0 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--white);
+  box-shadow: 0 8px 24px rgba(32, 33, 36, 0.08);
+}
+
+.about-language__switch button {
+  min-width: 102px;
+  min-height: 42px;
+  border: 0;
+  border-radius: 999px;
+  color: var(--ink-soft);
+  background: transparent;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.about-language__switch button:hover {
+  color: var(--pink-dark);
+  background: var(--pink-soft);
+}
+
+.about-language__switch button.is-active {
+  color: var(--white);
+  background: linear-gradient(135deg, var(--pink), var(--pink-dark));
+  box-shadow: 0 7px 18px rgba(233, 0, 104, 0.22);
+}
+
+.about-language__switch button:active {
+  transform: scale(0.98);
+}
+
+.about-language__switch button:focus-visible {
+  outline: 3px solid rgba(24, 167, 165, 0.4);
+  outline-offset: 3px;
+}
+
+@media (max-width: 700px) {
+  .about-language {
+    margin-bottom: 46px;
+    align-items: stretch;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .about-language__switch {
+    width: 100%;
+  }
+
+  .about-language__switch button {
+    min-width: 0;
+  }
+}
+
+@media (max-width: 420px) {
+  .about-language {
+    padding: 18px;
+  }
+
+  .about-language__badge {
+    width: 46px;
+    height: 46px;
+    border-radius: 13px;
+    font-size: 13px;
+  }
+
+  .about-language__intro small {
+    font-size: 11px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about-language__switch button {
+    transition: none;
+  }
+}

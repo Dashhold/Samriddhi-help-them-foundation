@@ -134,6 +134,7 @@ function Footer() {
       <div className="page-shell footer-bottom">
         <span>© 2026 Samriddhi Help Team Foundation. All rights reserved.</span>
         <div>
+          <AppLink to="/privacy-policy">Privacy policy</AppLink>
           <AppLink to="/documents">Transparency</AppLink>
           <AppLink to="/reports">Reports</AppLink>
         </div>
