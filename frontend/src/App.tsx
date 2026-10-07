@@ -12,6 +12,8 @@ import JoinPage from "./pages/JoinPage"
 import { MemberIdCardPage, TeamPage } from "./pages/TeamPage"
 import AboutPage from "./pages/AboutPage"
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage"
+import RefundCancellationPolicyPage from "./pages/RefundCancellationPolicyPage"
+import TermsAndConditionsPage from "./pages/TermsAndConditionsPage"
 
 const AdminAccess = lazy(() => import("./admin/AdminAccess"))
 
@@ -47,6 +49,10 @@ function AppRoutes() {
             ? "Join us · Samriddhi Help Team Foundation"
             : path === "/about"
               ? "About us · Samriddhi Help Team Foundation"
+            : path === "/refund-cancellation-policy"
+              ? "Refund / Cancellation Policy · Samriddhi Help Team Foundation"
+            : path === "/terms-and-conditions"
+              ? "Terms & Conditions · Samriddhi Help Team Foundation"
             : path.startsWith("/team/")
               ? "Member ID card · Samriddhi Help Team Foundation"
               : `${path
@@ -96,6 +102,9 @@ function AppRoutes() {
   else if (path === "/reports") page = <ReportsPage />
   else if (path === "/about") page = <AboutPage />
   else if (path === "/privacy-policy") page = <PrivacyPolicyPage />
+  else if (path === "/refund-cancellation-policy")
+    page = <RefundCancellationPolicyPage />
+  else if (path === "/terms-and-conditions") page = <TermsAndConditionsPage />
   else if (path === "/join") page = <JoinPage />
   else if (path === "/team") page = <TeamPage />
   else if (path.startsWith("/team/"))
