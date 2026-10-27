@@ -361,7 +361,7 @@ export const defaultSiteContent: SiteContent = {
     phone: "+91 88140 92008",
     whatsapp: "918814092008",
     address:
-      "H.No. 01, Second Floor, VPO Kuleri, Hisar, Haryana – 125047, India",
+      "H.No 01 second floor VPO, KULERI HISAR, Kuleri, Hisar, Hisar- 125047, Haryana",
     shortAddress: "Hisar, Haryana, India",
   },
 }

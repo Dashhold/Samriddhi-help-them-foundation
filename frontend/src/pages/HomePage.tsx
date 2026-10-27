@@ -744,7 +744,7 @@ function Contact() {
               </span>
               <div>
                 <small>Visit us</small>
-                <strong>{content.contact.shortAddress}</strong>
+                <strong>{content.contact.address}</strong>
               </div>
             </div>
           </div>
