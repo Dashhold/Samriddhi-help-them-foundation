@@ -14,6 +14,12 @@ import AboutPage from "./pages/AboutPage"
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage"
 import RefundCancellationPolicyPage from "./pages/RefundCancellationPolicyPage"
 import TermsAndConditionsPage from "./pages/TermsAndConditionsPage"
+import ShippingDeliveryPolicyPage from "./pages/ShippingDeliveryPolicyPage"
+import DonationAcceptancePolicyPage from "./pages/DonationAcceptancePolicyPage"
+import ChildProtectionPolicyPage from "./pages/ChildProtectionPolicyPage"
+import GrievanceRedressalPolicyPage from "./pages/GrievanceRedressalPolicyPage"
+import CookiePolicyPage from "./pages/CookiePolicyPage"
+import WebsiteDisclaimerPage from "./pages/WebsiteDisclaimerPage"
 
 const AdminAccess = lazy(() => import("./admin/AdminAccess"))
 
@@ -49,18 +55,32 @@ function AppRoutes() {
             ? "Join us · Samriddhi Help Team Foundation"
             : path === "/about"
               ? "About us · Samriddhi Help Team Foundation"
-            : path === "/refund-cancellation-policy"
-              ? "Refund / Cancellation Policy · Samriddhi Help Team Foundation"
-            : path === "/terms-and-conditions"
-              ? "Terms & Conditions · Samriddhi Help Team Foundation"
-            : path.startsWith("/team/")
-              ? "Member ID card · Samriddhi Help Team Foundation"
-              : `${path
-                  .slice(1)
-                  .replace(/-/g, " ")
-                  .replace(/\b\w/g, (letter) =>
-                    letter.toUpperCase(),
-                  )} · Samriddhi Help Team Foundation`
+              : path === "/privacy-policy"
+                ? "Privacy Policy · Samriddhi Help Team Foundation"
+                : path === "/refund-cancellation-policy"
+                  ? "Refund / Cancellation Policy · Samriddhi Help Team Foundation"
+                  : path === "/terms-and-conditions"
+                    ? "Terms & Conditions · Samriddhi Help Team Foundation"
+                    : path === "/shipping-delivery-policy"
+                      ? "Shipping and Delivery Policy · Samriddhi Help Team Foundation"
+                      : path === "/donation-acceptance-policy"
+                        ? "Donation Acceptance Policy · Samriddhi Help Team Foundation"
+                        : path === "/child-protection-policy"
+                          ? "Child Protection Policy · Samriddhi Help Team Foundation"
+                          : path === "/grievance-redressal-policy"
+                            ? "Grievance Redressal Policy · Samriddhi Help Team Foundation"
+                            : path === "/cookie-policy"
+                              ? "Cookie Policy · Samriddhi Help Team Foundation"
+                              : path === "/website-disclaimer"
+                                ? "Website Disclaimer · Samriddhi Help Team Foundation"
+                                : path.startsWith("/team/")
+                                  ? "Member ID card · Samriddhi Help Team Foundation"
+                                  : `${path
+                                      .slice(1)
+                                      .replace(/-/g, " ")
+                                      .replace(/\b\w/g, (letter) =>
+                                        letter.toUpperCase(),
+                                      )} · Samriddhi Help Team Foundation`
     document.title = title
     if (location.hash) {
       requestAnimationFrame(() =>
@@ -105,6 +125,16 @@ function AppRoutes() {
   else if (path === "/refund-cancellation-policy")
     page = <RefundCancellationPolicyPage />
   else if (path === "/terms-and-conditions") page = <TermsAndConditionsPage />
+  else if (path === "/shipping-delivery-policy")
+    page = <ShippingDeliveryPolicyPage />
+  else if (path === "/donation-acceptance-policy")
+    page = <DonationAcceptancePolicyPage />
+  else if (path === "/child-protection-policy")
+    page = <ChildProtectionPolicyPage />
+  else if (path === "/grievance-redressal-policy")
+    page = <GrievanceRedressalPolicyPage />
+  else if (path === "/cookie-policy") page = <CookiePolicyPage />
+  else if (path === "/website-disclaimer") page = <WebsiteDisclaimerPage />
   else if (path === "/join") page = <JoinPage />
   else if (path === "/team") page = <TeamPage />
   else if (path.startsWith("/team/"))

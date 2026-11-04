@@ -139,8 +139,9 @@ function Footer() {
             Refund / Cancellation Policy
           </AppLink>
           <AppLink to="/terms-and-conditions">Terms &amp; Conditions</AppLink>
-          <AppLink to="/documents">Transparency</AppLink>
-          <AppLink to="/reports">Reports</AppLink>
+          <AppLink to="/child-protection-policy">Child Protection</AppLink>
+          <AppLink to="/grievance-redressal-policy">Grievance Redressal</AppLink>
+          <AppLink to="/cookie-policy">Cookies</AppLink>
         </div>
       </div>
     </footer>
