@@ -30,7 +30,7 @@ export default function GrievanceRedressalPolicyPage() {
       title: "Grievance contact",
       body: (
           <>
-            <p>Grievance Officer: [NAME AND DESIGNATION OF APPOINTED GRIEVANCE OFFICER]</p>
+            <p>Contact the Foundation using the details below for grievance matters.</p>
             <p>Organisation: Samriddhi Help Team Foundation.</p>
             <p>Email: {contact.email}. Phone: {contact.phone}.</p>
             <p>Postal address: {contact.address}</p>
